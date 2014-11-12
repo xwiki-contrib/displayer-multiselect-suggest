@@ -128,7 +128,7 @@
   // TODO: rewrite this using the real suggest picker!
   // -------------------------------
   widgets.SuggestDisplayPicker = Class.create({
-  // -------------------------------
+
   initialize: function(element) {
     this.input = element;
     // get the referer input to pass it to the suggest script
@@ -421,13 +421,13 @@ ul.picker-list .picker-item {
   #set($discard = $xwiki.jsfx.use("js/scriptaculous/effects.js"))
   #set($discard = $xwiki.jsfx.use("js/scriptaculous/dragdrop.js"))
   ## ---------------------------------
-  ## we load this script non-deferred because we changed the way we setup the 
+  ## We load this script non-deferred because we changed the way we setup the 
   ## suggest picker (we do it in the page instead of the jsx), 
   ## so we cannot be sure anymore that the picker is defined by the time it is called in this page, 
   ## as xwiki:dom:loading is fired potentially before the loading of deferred scripts.
   ## ---------------------------------
   $xwiki.jsx.use('xwiki:XWiki.SuggestDisplay', {'defer' : false })
-  ## ---------------------------------
+
   $xwiki.ssx.use('xwiki:XWiki.SuggestDisplay', {'minify' : false})
   ## render a select with the current selection
   {{html clean="false"}}
@@ -441,7 +441,7 @@ ul.picker-list .picker-item {
         #set ($v = $k)
       #end
       ## ---------------------------------
-      ## users : display first name and last name instead of username
+      ## users : Display first name and last name instead of username
       ## ---------------------------------
       #if($isUser)
         #set($userObj = $xwiki.getDocument($v).getObject('XWiki.XWikiUsers'))
@@ -450,7 +450,7 @@ ul.picker-list .picker-item {
           #set($v = $userObj.getProperty('first_name').value + ' ' + $userObj.getProperty('last_name').value)
         #end
       #end
-      ## ---------------------------------
+
       &lt;option label="$k" value="$v" selected="selected" /&gt;
     #end
     #if ($value.size() &gt; 0)
@@ -463,7 +463,7 @@ ul.picker-list .picker-item {
     ## now display the item in edit mode, to have the suggest and all.
     $doc.displayEdit($propertyClass, $prefix, $object)
     ## --------------------------------
-    ## this multiple suggest feature overwrites simple select suggest
+    ## This multiple suggest feature overwrites simple select suggest
     ## -&gt; call multi suggest for current obj &amp; prop
     ## --------------------------------
     &lt;script type="text/javascript"&gt;
@@ -475,7 +475,7 @@ ul.picker-list .picker-item {
           new XWiki.widgets.SuggestDisplayPicker(suggestInput);
         });
     &lt;/script&gt;
-    ## ---------------------------------
+
     #if($displayAddButton)
       &lt;button id="${prefix}${name}_addbutton" class="suggested-addbutton hidden" type="button"&gt;&lt;img src="$xwiki.getSkinFile('icons/silk/add.gif')" alt="$msg.get('save')" /&gt;&lt;/button&gt;
     #end
@@ -493,7 +493,7 @@ ul.picker-list .picker-item {
     #elseif($valueIsLink || $valueIsExternalLink)
       [[{{{${title}}}}&gt;&gt;path:${v}#if($valueIsExternalLink)||rel="__blank"#end]]
     ## ---------------------------------
-    ## users : display first name and last name instead of username
+    ## users : Display first name and last name instead of username
     ## ---------------------------------
     #elseif($isUser)
       {{html}}
@@ -502,7 +502,7 @@ ul.picker-list .picker-item {
       #else
         $xwiki.getUserName($v, false)
       #end{{/html}}
-    ## ---------------------------------
+
     #else
       $title
     #end
