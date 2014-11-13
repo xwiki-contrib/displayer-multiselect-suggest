@@ -35,6 +35,12 @@
  <name>Multiselect custom display</name>
  <packaging>xar</packaging>
  <description>This is a custom suggest displayer for DBList object properties which adapts the suggest feature to multiple selection.</description>
+ <properties>
+   <!-- Old names of this module used for retro compatibility when resolving dependencies of old extensions -->
+   <xwiki.extension.features>
+     marta:multiselect-custom-display
+   </xwiki.extension.features>
+ </properties>
  <scm>
    <connection>scm:git:git://github.com/xwiki-contrib/displayer-multiselect-suggest.git</connection>
    <developerConnection>scm:git:git@github.com:xwiki-contrib/displayer-multiselect-suggest.git</developerConnection>
