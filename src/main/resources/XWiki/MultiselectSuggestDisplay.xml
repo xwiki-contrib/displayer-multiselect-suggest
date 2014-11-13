@@ -287,7 +287,7 @@
     new XWiki.widgets.SuggestDisplayPicker(item);
   });
 });*/
-// -------------------------------</code>
+
     </property>
     <property>
       <name/>
