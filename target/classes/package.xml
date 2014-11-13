@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<package>
+<infos>
+<name>Multiselect custom display</name>
+<description>This is a custom suggest displayer for DBList object properties which adapts the suggest feature to multiple selection.</description>
+<licence></licence>
+<author>XWiki.Admin</author>
+<extensionId>org.xwiki.contrib:displayer-multiselect-suggest</extensionId>
+<version>1.1-SNAPSHOT</version>
+<backupPack>false</backupPack>
+</infos>
+<files>
+<file language="" defaultAction="0">XWiki.SuggestDisplay</file>
+</files>
+</package>
