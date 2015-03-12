@@ -267,7 +267,6 @@ XWiki.widgets.MyModalPopup = Class.create(XWiki.widgets.ModalPopup, {
     </property>
     <property>
       <code>require(['jquery'],function($){
-//var j = $.noConflict();
 $.extend({
 	createUploadIframe: function(id, uri){
 		//create frame
