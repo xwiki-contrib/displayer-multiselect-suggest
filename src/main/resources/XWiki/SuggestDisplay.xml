@@ -181,14 +181,8 @@
     this.prepareList();
     this.input.value = "";
     
-    //Check if in items editable mode
-    var inEditItemsMode = false;
-    var flag = Element.select($(element).up(0), ".inEditItemsMode");
-    if(flag.length &gt; 0){//In items edit mode
-       inEditItemsMode = true;
-    }
     //Insert the new entry button
-    if(inEditItemsMode){
+    if(this.inEditItemsMode($(element).up(0))){
        this.insertNewEntryBtn(element);
     }
   },
@@ -270,16 +264,10 @@
     li.appendChild(span);
     li.appendChild(hiddenInput);
     //Add the edit button
-    var editImg = new Element("img",{'src': "$xwiki.getSkinFile('icons/silk/page_white_edit.png')"});
-    editImg.observe('click', this.editItem.bindAsEventListener(this));
-    //Check if in items editable mode
-    var inEditItemsMode = false;
-    var flag = Element.select($(this.list).up(0), ".inEditItemsMode");
-    if(flag.length &gt; 0){//In items edit mode
-       inEditItemsMode = true;
-    }
-    if(inEditItemsMode){//In items edit mode
-       li.appendChild(editImg);
+    if(this.inEditItemsMode($(this.list).up(0))){
+        var editImg = new Element("img",{'src': "$xwiki.getSkinFile('icons/silk/page_white_edit.png')"});
+        editImg.observe('click', this.editItem.bindAsEventListener(this));
+        li.appendChild(editImg);
     }
     li.appendChild(img);
 
@@ -288,7 +276,17 @@
     // re-setup the list drag and drop so that the new element can also be moved
     this.setupDragDrop();
   },
-  
+
+  //Check if in items editable mode
+  inEditItemsMode : function(elem){
+    var rep = false;
+    var flag = Element.select(elem, ".inEditItemsMode");
+    if(flag.length &gt; 0){//In items edit mode
+       rep = true;
+    }
+    return rep;
+  },
+
   editItem : function(event) {
     var li = event.findElement('li');
     var input = li.select("input[type='hidden']");
@@ -301,7 +299,7 @@
        editURL = editURL + '&amp;itemDocRef=' + itemDocRef + '&amp;action=editItem' + "&amp;className=" + className + "&amp;propertyName=" + propertyName;
        //Remove popup old content before showing it
        $('.xdialog-modal-container').remove();
-       new XWiki.widgets.MyModalPopup({pageURL: editURL});
+       new XWiki.widgets.EditModePopup({pageURL: editURL});
     });
   },
   insertNewEntryBtn:function(element){

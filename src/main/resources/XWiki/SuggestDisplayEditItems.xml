@@ -128,7 +128,7 @@ if(typeof(XWiki) == "undefined" || typeof(XWiki.widgets) == "undefined" || typeo
   }
 } else {
 
-XWiki.widgets.MyModalPopup = Class.create(XWiki.widgets.ModalPopup, {
+XWiki.widgets.EditModePopup = Class.create(XWiki.widgets.ModalPopup, {
  /** Default parameters can be added to the custom class. */
   defaultInteractionParameters : {
   },
@@ -576,7 +576,7 @@ initializeNewEntryBtn : function(){
       var newItemURL = "$xwiki.getURL("XWiki.SuggestDisplayEditItems",'edit','editor=inline&amp;xpage=plain')";
       newItemURL = newItemURL + '&amp;action=newItem' + "&amp;className=" + className + "&amp;propertyName=" + propertyName + "&amp;parent=" + itemParent + "&amp;space=" + itemSpace;
       $('.xdialog-modal-container').remove();
-      new XWiki.widgets.MyModalPopup({pageURL: newItemURL});
+      new XWiki.widgets.EditModePopup({pageURL: newItemURL});
    });
 },
 //Check if new items exists
