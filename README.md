@@ -10,10 +10,11 @@ A custom suggest displayer for DBList object properties which adapts the suggest
 
 * To activate the itemsEditable mode that allows you to create new items and edit selected items, keep the configuration above and precede the {{include}} macro with below code.
 
-`{{velocity}}
+```
+{{velocity}}
 #set($SuggestDisplay_itemsEditable = true)
-{{/velocity}}`
-
+{{/velocity}}
+```
 * To force the space where the new items will be created to a custom space add the bellow code before the {{include}} macro.
 
 `#set($SuggestDisplay_editModeSpace = "yourSpace")`
