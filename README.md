@@ -1,7 +1,7 @@
 displayer-multiselect-suggest
 =============================
 
-##Descritpion
+##Description
 A custom suggest displayer for DBList object properties which adapts the suggest feature to multiple selection.
 
 ##Usage
@@ -15,7 +15,7 @@ A custom suggest displayer for DBList object properties which adapts the suggest
 #set($SuggestDisplay_itemsEditable = true)
 {{/velocity}}
 ```
-* To force the space where the new items will be created to a custom space add the bellow code before the {{include}} macro.
+* To force the space where the new items will be created to a custom space add the below code before the {{include}} macro.
 
 `#set($SuggestDisplay_editModeSpace = "yourSpace")`
 
