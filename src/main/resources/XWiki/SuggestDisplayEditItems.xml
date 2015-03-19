@@ -637,11 +637,21 @@ initializeItemEditForm : function(itemEditURL,XWModalContent){
       event.preventDefault();
    });
    //Initialize textarea fields Wysiwyg
+   #set($wysiwygConfig = {})
+   #wysiwyg_storeConfig($wysiwygConfig $doc "HOOKID" true)
+   #set($jsVarName = "wysiwygConfig${util.generateRandomString(4)}")
    Wysiwyg.onModuleLoad(function() {
    $("textarea").each(function(){
       var wysiwygConfig = {
-         hookId:$(this).attr("id"),
+         #set($separator = '')
+         #foreach($entry in $wysiwygConfig.entrySet())
+           #if($entry.value || "$!entry.value" != '')
+              ${separator}$entry.key: '$!{escapetool.javascript($entry.value)}'
+              #set($separator = ',')
+           #end
+         #end
       };
+      wysiwygConfig.hookId = $(this).attr("id");
       new WysiwygEditor(wysiwygConfig); 
    });
    });
@@ -759,11 +769,10 @@ initializeAttachmentPicker : function(itemEditURL,attPickerURL,XWModalContent){
 //Save sugggest display item
 saveSuggestDisplayItem : function(XWModalContent){
    var saveURL = $("#editItemForm").attr("action");
-   var formData = $("#editItemForm").serializeObject();
+   var formData = $("#editItemForm").serialize();
    $.ajax({
-	url:saveURL,
-	type:'POST',
-	data:(formData),
+	url:saveURL + "?" + formData,
+	type:'GET',
 	success:function(rep, textStatus, jqXHR){
 	},
 	complete:function(event, XMLHttpRequest, ajaxOptions){
