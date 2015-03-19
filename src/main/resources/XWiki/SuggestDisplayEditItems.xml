@@ -980,7 +980,10 @@ $.initializeNewEntryBtn();
            {"results":false}
       #else
          #set($documentReference = $services.model.createDocumentReference(null, $request.spaceName, $request.docName))
-         #set($redirectURL = $xwiki.getURL($documentReference,'edit',"template=${request.template}&amp;parent=${request.parent}&amp;title=${request.docName}"))
+         #set($title = $util.encodeURI($request.docName))
+         #set($parent = $util.encodeURI($request.parent))
+         #set($template = $util.encodeURI($request.template))
+         #set($redirectURL = $xwiki.getURL($documentReference,'edit',"template=${template}&amp;parent=${parent}&amp;title=${title}"))
            {"results":"$redirectURL"}
         #end
    #elseif($action == "ajaxUploadAttachment")
