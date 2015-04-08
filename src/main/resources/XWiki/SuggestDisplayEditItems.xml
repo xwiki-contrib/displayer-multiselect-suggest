@@ -61,7 +61,7 @@
         <prettyName>Caching policy</prettyName>
         <relationalStorage>0</relationalStorage>
         <separator> </separator>
-        <separators> ,|</separators>
+        <separators>|, </separators>
         <size>1</size>
         <unmodifiable>0</unmodifiable>
         <values>long|short|default|forbid</values>
@@ -106,7 +106,7 @@
         <prettyName>Use this extension</prettyName>
         <relationalStorage>0</relationalStorage>
         <separator> </separator>
-        <separators> ,|</separators>
+        <separators>|, </separators>
         <size>1</size>
         <unmodifiable>0</unmodifiable>
         <values>currentPage|onDemand|always</values>
@@ -206,7 +206,7 @@ XWiki.widgets.EditModePopup = Class.create(XWiki.widgets.ModalPopup, {
         <prettyName>Caching policy</prettyName>
         <relationalStorage>0</relationalStorage>
         <separator> </separator>
-        <separators> ,|</separators>
+        <separators>|, </separators>
         <size>1</size>
         <unmodifiable>0</unmodifiable>
         <values>long|short|default|forbid</values>
@@ -251,7 +251,7 @@ XWiki.widgets.EditModePopup = Class.create(XWiki.widgets.ModalPopup, {
         <prettyName>Use this extension</prettyName>
         <relationalStorage>0</relationalStorage>
         <separator> </separator>
-        <separators> ,|</separators>
+        <separators>|, </separators>
         <size>1</size>
         <unmodifiable>0</unmodifiable>
         <values>currentPage|onDemand|always</values>
@@ -485,7 +485,7 @@ handleError: function( s, xhr, status, e ) {
         <prettyName>Caching policy</prettyName>
         <relationalStorage>0</relationalStorage>
         <separator> </separator>
-        <separators> ,|</separators>
+        <separators>|, </separators>
         <size>1</size>
         <unmodifiable>0</unmodifiable>
         <values>long|short|default|forbid</values>
@@ -530,7 +530,7 @@ handleError: function( s, xhr, status, e ) {
         <prettyName>Use this extension</prettyName>
         <relationalStorage>0</relationalStorage>
         <separator> </separator>
-        <separators> ,|</separators>
+        <separators>|, </separators>
         <size>1</size>
         <unmodifiable>0</unmodifiable>
         <values>currentPage|onDemand|always</values>
@@ -573,7 +573,7 @@ initializeNewEntryBtn : function(){
       var itemParent = $("#itemParent").eq(0).val();
       var itemSpace = $("#itemSpace").eq(0).val();
       //Open XWiki Modal
-      var newItemURL = "$xwiki.getURL("XWiki.SuggestDisplayEditItems",'edit','editor=inline&amp;xpage=plain')";
+      var newItemURL = "$xwiki.getURL("XWiki.SuggestDisplayEditItems",'view','xpage=plain')";
       newItemURL = newItemURL + '&amp;action=newItem' + "&amp;className=" + className + "&amp;propertyName=" + propertyName + "&amp;parent=" + itemParent + "&amp;space=" + itemSpace;
       $('.xdialog-modal-container').remove();
       new XWiki.widgets.EditModePopup({pageURL: newItemURL});
@@ -652,6 +652,7 @@ initializeItemEditForm : function(itemEditURL,XWModalContent){
          #end
       };
       wysiwygConfig.hookId = $(this).attr("id");
+      wysiwygConfig.inputURL = wysiwygConfig.inputURL.replace('/edit/','/view/');
       new WysiwygEditor(wysiwygConfig); 
    });
    });
@@ -815,7 +816,7 @@ $.initializeNewEntryBtn();
         <prettyName>Caching policy</prettyName>
         <relationalStorage>0</relationalStorage>
         <separator> </separator>
-        <separators> ,|</separators>
+        <separators>|, </separators>
         <size>1</size>
         <unmodifiable>0</unmodifiable>
         <values>long|short|default|forbid</values>
@@ -841,7 +842,7 @@ $.initializeNewEntryBtn();
         <prettyName>Content Type</prettyName>
         <relationalStorage>0</relationalStorage>
         <separator> </separator>
-        <separators> ,|</separators>
+        <separators>|, </separators>
         <size>1</size>
         <unmodifiable>0</unmodifiable>
         <values>CSS|LESS</values>
@@ -876,7 +877,7 @@ $.initializeNewEntryBtn();
         <prettyName>Use this extension</prettyName>
         <relationalStorage>0</relationalStorage>
         <separator> </separator>
-        <separators> ,|</separators>
+        <separators>|, </separators>
         <size>1</size>
         <unmodifiable>0</unmodifiable>
         <values>currentPage|onDemand|always</values>
@@ -937,17 +938,25 @@ $.initializeNewEntryBtn();
 #set($action = $request.action)
 #if("$!action" != "")
    #if($action == "editItem" &amp;&amp; "$!request.itemDocRef" != "" &amp;&amp; $xwiki.exists("$request.itemDocRef") &amp;&amp; "$!request.className" != "" &amp;&amp; "$!request.propertyName" != "")
+     #set($itemDocRef = $request.itemDocRef)
+     #if($xwiki.hasAccessLevel('edit',$xcontext.user,${itemDocRef}))
+       #set($discard = $context.setDisplayMode("edit"))
        #set($className = $request.className)
        #set($propertyName = $request.propertyName)
        #getItemClassName($className,$propertyName)
-       #set($itemDocRef = $request.itemDocRef)
        #set($doc = $xwiki.getDocument($itemDocRef))
-        #if($itemClassName != "" &amp;&amp; $xwiki.exists($itemClassName))
+       #if($itemClassName != "" &amp;&amp; $xwiki.exists($itemClassName))
           #set($itemClassSheet = $itemClassName.substring(0,$itemClassName.indexOf('Class')))
           #set($itemClassSheet = "${itemClassSheet}Sheet")
+          ## To show the edit attachment button of the attachment selector we need to check 
+          ## if the current user has edit rights on the item document and then set the $hasEdit variable to true 
+          #set($itemEditPerm = $xwiki.hasAccessLevel('edit',$xcontext.user,${itemDocRef}))
+          #if($itemEditPerm &amp;&amp; !$hasEdit)
+             #set($hasEdit = true)
+          #end
           {{html wiki="true"}}
           &lt;form action="$xwiki.getURL($itemDocRef,'save')" id="editItemForm"&gt;
-            {{include document="$itemClassSheet"/}}
+            {{include reference="$itemClassSheet"/}}
              &lt;input type="hidden" name="form_token" value="$!{services.csrf.getToken()}" /&gt;
              &lt;input type="hidden" name="xredirect" value="" /&gt;
              &lt;input class="btn btn-primary" type="button" name="action_save" title="Alt+Shift+S" value="Save"&gt;
@@ -957,6 +966,11 @@ $.initializeNewEntryBtn();
        #else
           ##TODO
        #end
+     #else
+
+        {{error}}$services.localization.render('error') : $services.localization.render('notallowed'){{/error}}
+
+     #end 
    #elseif($action == "newItem" &amp;&amp; "$!request.className" != "" &amp;&amp; "$!request.propertyName" != "" &amp;&amp; "$!request.parent" != "" &amp;&amp; "$!request.space" != "")
        #set($className = $request.className)
        #set($propertyName = $request.propertyName)
@@ -969,7 +983,6 @@ $.initializeNewEntryBtn();
        #else
           ##TODO
        #end
-
        {{html}}
          &lt;form action="" id="newdoc" method="post"&gt;
             &lt;div&gt;
