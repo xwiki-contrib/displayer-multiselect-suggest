@@ -296,8 +296,9 @@
     require(['jquery'],function($){
        var className = $("input[type='hidden'][id$='_className']",$(li).parent().parent()).eq(0).val();
        var propertyName = $("input[type='hidden'][id$='_propertyName']",$(li).parent().parent()).eq(0).val();
+       var wiki = $("input[type='hidden'].currentWiki",$(li).parent().parent()).eq(0).val();
        var editURL = "$xwiki.getURL("XWiki.SuggestDisplayEditItems",'view','xpage=plain')";
-       editURL = editURL + '&amp;itemDocRef=' + itemDocRef + '&amp;action=editItem' + "&amp;className=" + className + "&amp;propertyName=" + propertyName;
+       editURL = editURL + '&amp;itemDocRef=' + wiki + ':' + itemDocRef + '&amp;action=editItem' + "&amp;className=" + className + "&amp;propertyName=" + propertyName;
        //Remove popup old content before showing it
        $('.xdialog-modal-container').remove();
        new XWiki.widgets.EditModePopup({pageURL: editURL});
@@ -537,6 +538,7 @@ ul.picker-list .picker-item {
        &lt;input type="hidden" id="itemSpace" value="$doc.getSpace()"/&gt;
        #end
        &lt;input type="hidden" class="inEditItemsMode" value="1"/&gt;
+       &lt;input type="hidden" class="currentWiki" value="$context.getDatabase()"/&gt;
     #end
     
     ## --------------------------------

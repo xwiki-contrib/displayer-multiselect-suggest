@@ -633,6 +633,11 @@ initializeItemEditForm : function(itemEditURL,XWModalContent){
    //Initialize attachment-picker fields
    $(".attachment-picker-start").click(function(event){
       var attPickerURL = $(this).attr("href") + "&amp;xpage=plain";
+      var wikiName = $("#wikiName").val();
+      attPickerURL = attPickerURL + "&amp;wikiName=" + wikiName;
+      if(attPickerURL.indexOf('docname=' + wikiName + ":") == -1){
+         attPickerURL = attPickerURL.replace('docname=','docname=' + wikiName + ':');
+      }
       $.initializeAttachmentPicker(itemEditURL,attPickerURL,XWModalContent);
       event.preventDefault();
    });
@@ -945,6 +950,7 @@ $.initializeNewEntryBtn();
        #set($propertyName = $request.propertyName)
        #getItemClassName($className,$propertyName)
        #set($doc = $xwiki.getDocument($itemDocRef))
+       #set($wikiName = $doc.getDocumentReference().getWikiReference().getName())
        #if($itemClassName != "" &amp;&amp; $xwiki.exists($itemClassName))
           #set($itemClassSheet = $itemClassName.substring(0,$itemClassName.indexOf('Class')))
           #set($itemClassSheet = "${itemClassSheet}Sheet")
@@ -957,6 +963,7 @@ $.initializeNewEntryBtn();
           {{html wiki="true"}}
           &lt;form action="$xwiki.getURL($itemDocRef,'save')" id="editItemForm"&gt;
             {{include reference="$itemClassSheet"/}}
+             &lt;input type="hidden" id="wikiName" value="$wikiName"/&gt;
              &lt;input type="hidden" name="form_token" value="$!{services.csrf.getToken()}" /&gt;
              &lt;input type="hidden" name="xredirect" value="" /&gt;
              &lt;input class="btn btn-primary" type="button" name="action_save" title="Alt+Shift+S" value="Save"&gt;
