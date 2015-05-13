@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
 <!--
  * See the NOTICE file distributed with this work for additional
  * information regarding copyright ownership.
@@ -280,12 +279,7 @@
 
   // Check if in items editable mode
   inEditItemsMode : function(elem) {
-    var rep = false;
-    var flag = Element.select(elem, ".inEditItemsMode");
-    if (flag.length &gt; 0) {//In items edit mode
-       rep = true;
-    }
-    return rep;
+    return Element.select(elem, '.inEditItemsMode').length &gt; 0;
   },
 
   editItem : function(event) {
@@ -518,13 +512,13 @@ ul.picker-list .picker-item {
     $doc.displayEdit($propertyClass, $prefix, $object)
 
     ## Save the className and the class property name in hidden picker (In editItemInPopups mode)
-    #if("$!SuggestDisplay_itemsEditable" != "" &amp;&amp; $SuggestDisplay_itemsEditable == true)
+    #if("$!SuggestDisplay_itemsEditable" != '' &amp;&amp; $SuggestDisplay_itemsEditable == true)
        ## New js/css calls
        #set($discard = $xwiki.ssx.use("XWiki.SuggestDisplayEditItems"))
        #set($discard = $xwiki.jsx.use("XWiki.SuggestDisplayEditItems"))
-       #set ($attachmentPickerDocName = 'XWiki.AttachmentSelector')
-       $xwiki.ssx.use($attachmentPickerDocName)
-       $xwiki.jsx.use($attachmentPickerDocName)
+       #set($attachmentPickerDocName = 'XWiki.AttachmentSelector')
+       #set($discard = $xwiki.ssx.use($attachmentPickerDocName))
+       #set($discard = $xwiki.jsx.use($attachmentPickerDocName))
        ## Wysiwyg
        #set($lazy = false)
        #wysiwyg_import($lazy)
