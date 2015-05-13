@@ -264,7 +264,7 @@
     img.observe('click', this.removeItem.bindAsEventListener(this));
     li.appendChild(span);
     li.appendChild(hiddenInput);
-    //Add the edit button
+    // Add the edit button
     if (this.inEditItemsMode($(this.list).up(0))) {
         var editImg = new Element("img",{'src': "$xwiki.getSkinFile('icons/silk/page_white_edit.png')"});
         editImg.observe('click', this.editItem.bindAsEventListener(this));
@@ -521,7 +521,7 @@ ul.picker-list .picker-item {
        #set($discard = $xwiki.ssx.use($attachmentPickerDocName))
        #set($discard = $xwiki.jsx.use($attachmentPickerDocName))
        ## Wysiwyg
-       #set($lazy = false)
+       #set($lazy = true)
        #wysiwyg_import($lazy)
        ## Date picker : TODO
        &lt;input type="hidden" id="${prefix}_className" value="$object.getxWikiClass().getName()"/&gt;
@@ -533,7 +533,7 @@ ul.picker-list .picker-item {
        &lt;input type="hidden" id="itemSpace" value="$doc.getSpace()"/&gt;
        #end
        &lt;input type="hidden" class="inEditItemsMode" value="1"/&gt;
-       &lt;input type="hidden" class="currentWiki" value="$context.getDatabase()"/&gt;
+       &lt;input type="hidden" class="currentWiki" value="$services.wiki.currentWikiId"/&gt;
     #end
     
     ## --------------------------------
