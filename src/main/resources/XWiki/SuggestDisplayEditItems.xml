@@ -266,7 +266,12 @@ XWiki.widgets.EditModePopup = Class.create(XWiki.widgets.ModalPopup, {
       <cache>long</cache>
     </property>
     <property>
-      <code>require(['jquery'],function($){
+      <code>/**
+*   jQuery Ajax File Uploader Version 2.1
+*   jQuery plugin for file upload (http://www.phpletter.com/Our-Projects/AjaxFileUpload/)
+*/
+
+require(['jquery'],function($){
 $.extend({
 	createUploadIframe: function(id, uri){
 		//create frame
@@ -900,7 +905,7 @@ $.initializeNewEntryBtn();
    width:90%;
 }
 .ajaxloader{
-   background-image: url("/mainwiki/resources/icons/xwiki/ajax-loader-large.gif");
+   background-image: url("$xwiki.getSkinFile('icons/xwiki/ajax-loader-large.gif')");
    background-repeat: no-repeat;
    background-position: center;
    height: 100px
@@ -920,7 +925,7 @@ $.initializeNewEntryBtn();
       <name>XWiki Modal Popup CSS</name>
     </property>
     <property>
-      <parse/>
+      <parse>1</parse>
     </property>
     <property>
       <use>onDemand</use>
