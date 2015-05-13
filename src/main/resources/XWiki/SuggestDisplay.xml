@@ -513,7 +513,7 @@ ul.picker-list .picker-item {
     $doc.displayEdit($propertyClass, $prefix, $object)
 
     ## Save the className and the class property name in hidden picker (In editItemInPopups mode)
-    #if("$!SuggestDisplay_itemsEditable" != '' &amp;&amp; $SuggestDisplay_itemsEditable == true)
+    #if("$!SuggestDisplayItemsEditable" != '' &amp;&amp; $SuggestDisplayItemsEditable == true)
        ## New js/css calls
        #set($discard = $xwiki.ssx.use("XWiki.SuggestDisplayEditItems"))
        #set($discard = $xwiki.jsx.use("XWiki.SuggestDisplayEditItems"))
@@ -527,8 +527,8 @@ ul.picker-list .picker-item {
        &lt;input type="hidden" id="${prefix}_className" value="$object.getxWikiClass().getName()"/&gt;
        &lt;input type="hidden" id="${prefix}_propertyName" value="$name"/&gt;
        &lt;input type="hidden" id="itemParent" value="$doc.getDocumentReference()"/&gt;
-       #if("$!SuggestDisplay_editModeSpace" != "")
-       &lt;input type="hidden" id="itemSpace" value="$!SuggestDisplay_editModeSpace"/&gt;
+       #if("$!SuggestDisplayEditModeSpace" != '')
+       &lt;input type="hidden" id="itemSpace" value="$!SuggestDisplayEditModeSpace"/&gt;
        #else
        &lt;input type="hidden" id="itemSpace" value="$doc.getSpace()"/&gt;
        #end

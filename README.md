@@ -12,11 +12,11 @@ A custom suggest displayer for DBList object properties which adapts the suggest
 
 ```
 {{velocity}}
-#set($SuggestDisplay_itemsEditable = true)
+#set($SuggestDisplayItemsEditable = true)
 {{/velocity}}
 ```
 * To force the space where the new items will be created to a custom space add the below code before the {{include}} macro.
 
-`#set($SuggestDisplay_editModeSpace = "yourSpace")`
+`#set($SuggestDisplayEditModeSpace = "yourSpace")`
 
 Notice that the default space of new items is the space of the document that calls the displayer-multiselect-suggest. 
