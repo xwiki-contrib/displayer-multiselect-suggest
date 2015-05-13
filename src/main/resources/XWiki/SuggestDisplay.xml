@@ -182,8 +182,8 @@
     this.prepareList();
     this.input.value = "";
     
-    //Insert the new entry button
-    if(this.inEditItemsMode($(element).up(0))){
+    // Insert the new entry button
+    if (this.inEditItemsMode($(element).up(0))) {
        this.insertNewEntryBtn(element);
     }
   },
@@ -265,7 +265,7 @@
     li.appendChild(span);
     li.appendChild(hiddenInput);
     //Add the edit button
-    if(this.inEditItemsMode($(this.list).up(0))){
+    if (this.inEditItemsMode($(this.list).up(0))) {
         var editImg = new Element("img",{'src': "$xwiki.getSkinFile('icons/silk/page_white_edit.png')"});
         editImg.observe('click', this.editItem.bindAsEventListener(this));
         li.appendChild(editImg);
@@ -278,11 +278,11 @@
     this.setupDragDrop();
   },
 
-  //Check if in items editable mode
-  inEditItemsMode : function(elem){
+  // Check if in items editable mode
+  inEditItemsMode : function(elem) {
     var rep = false;
     var flag = Element.select(elem, ".inEditItemsMode");
-    if(flag.length &gt; 0){//In items edit mode
+    if (flag.length &gt; 0) {//In items edit mode
        rep = true;
     }
     return rep;
@@ -292,19 +292,19 @@
     var li = event.findElement('li');
     var input = li.select("input[type='hidden']");
     var itemDocRef = input[0].value;
-    //Get item class name and property name
-    require(['jquery'],function($){
+    // Get item class name and property name
+    require(['jquery'],function($) {
        var className = $("input[type='hidden'][id$='_className']",$(li).parent().parent()).eq(0).val();
        var propertyName = $("input[type='hidden'][id$='_propertyName']",$(li).parent().parent()).eq(0).val();
        var wiki = $("input[type='hidden'].currentWiki",$(li).parent().parent()).eq(0).val();
        var editURL = "$xwiki.getURL("XWiki.SuggestDisplayEditItems",'view','xpage=plain')";
        editURL = editURL + '&amp;itemDocRef=' + wiki + ':' + itemDocRef + '&amp;action=editItem' + "&amp;className=" + className + "&amp;propertyName=" + propertyName;
-       //Remove popup old content before showing it
+       // Remove popup old content before showing it
        $('.xdialog-modal-container').remove();
        new XWiki.widgets.EditModePopup({pageURL: editURL});
     });
   },
-  insertNewEntryBtn:function(element){
+  insertNewEntryBtn : function(element) {
      require(['jquery'],function($){
        $( '&lt;input type="button" value="Create New Entry" class="button newEntryBtn"/&gt;' ).insertAfter( $(element) );
      });

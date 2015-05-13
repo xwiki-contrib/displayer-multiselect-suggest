@@ -564,28 +564,28 @@ $.fn.serializeObject = function()
 };
 
 $.extend({
-//Method to initialize the new item btn
-initializeNewEntryBtn : function(){
-   $("body").on("click",".newEntryBtn",function(event){
+// Method to initialize the new item btn
+initializeNewEntryBtn : function() {
+   $("body").on("click",".newEntryBtn",function(event) {
       var index = $(".newEntryBtn").index($(this));
       var className = $("input[type='hidden'][id$='_className']").eq(index).val();
       var propertyName = $("input[type='hidden'][id$='_propertyName']").eq(index).val();
       var itemParent = $("#itemParent").eq(0).val();
       var itemSpace = $("#itemSpace").eq(0).val();
-      //Open XWiki Modal
+      // Open XWiki Modal
       var newItemURL = "$xwiki.getURL("XWiki.SuggestDisplayEditItems",'view','xpage=plain')";
       newItemURL = newItemURL + '&amp;action=newItem' + "&amp;className=" + className + "&amp;propertyName=" + propertyName + "&amp;parent=" + itemParent + "&amp;space=" + itemSpace;
       $('.xdialog-modal-container').remove();
       new XWiki.widgets.EditModePopup({pageURL: newItemURL});
    });
 },
-//Check if new items exists
-checkItemExists : function(XWModalContent){
-   $(".checkItemExists").click(function(event){
+// Check if new items exists
+checkItemExists : function(XWModalContent) {
+   $(".checkItemExists").click(function(event) {
    var checkURL = "$xwiki.getURL('XWiki.SuggestDisplayEditItems','view','xpage=plain&amp;outputSyntax=plain&amp;action=checkItemExists')";
    var data = $(this).parents().eq(2).serialize();
    checkURL = checkURL + "&amp;" + data;
-   if($.trim($("#docName").val()) == ""){
+   if ($.trim($("#docName").val()) == "") {
       new XWiki.widgets.Notification("$services.localization.render('xe.totem.inputmustnotbeempty')", 'error',{timeout:1});
    }
    else
@@ -594,16 +594,16 @@ checkItemExists : function(XWModalContent){
      $.ajax({
       url:checkURL,
       dataType: 'json',
-      success:function(rep, textStatus, jqXHR){
-         if(rep){ 
-             if(rep.results == false){
+      success: function(rep, textStatus, jqXHR) {
+         if (rep) { 
+             if (rep.results == false) {
                 new XWiki.widgets.Notification("The target document already exists. Please choose a different name!", 'error',{timeout:1});
              }
              else
              {
-                 //Load item edit file
+                 // Load item edit file
                  var editNewItemFormURL = rep.results + "&amp;xpage=plain";
-                 $(XWModalContent).load(editNewItemFormURL, function(){
+                 $(XWModalContent).load(editNewItemFormURL, function() {
                      var saveURL = editNewItemFormURL.replace('/edit/','/save/');
                      var inputs = ' &lt;input class="btn btn-primary" type="button" name="action_save" title="Alt+Shift+S" value="Save"&gt;';
                      inputs += ' &lt;input class="btn btn-default" type="button" name="action_cancel" title="Alt+C" value="Cancel"&gt;';
@@ -615,38 +615,37 @@ checkItemExists : function(XWModalContent){
              }
          }
       },
-      complete:function(event, XMLHttpRequest, ajaxOptions){
-        //ToDo
+      complete: function(event, XMLHttpRequest, ajaxOptions) {
+        // ToDo
         $(".xnotification-inprogress").remove();    
       },
-      error:function(jqXHR, textStatus, errorThrown)
-      {
-        //ToDo
+      error: function(jqXHR, textStatus, errorThrown) {
+        // ToDo
       }
      });
     }
    });
 },
-//Method to intialize the item edit form
-initializeItemEditForm : function(itemEditURL,XWModalContent){
+// Method to intialize the item edit form
+initializeItemEditForm : function(itemEditURL,XWModalContent) {
    $(".xdialog-box").addClass("xwmlrg");
-   //Initialize attachment-picker fields
-   $(".attachment-picker-start").click(function(event){
+   // Initialize attachment-picker fields
+   $(".attachment-picker-start").click(function(event) {
       var attPickerURL = $(this).attr("href") + "&amp;xpage=plain";
       var wikiName = $("#wikiName").val();
       attPickerURL = attPickerURL + "&amp;wikiName=" + wikiName;
-      if(attPickerURL.indexOf('docname=' + wikiName + ":") == -1){
+      if (attPickerURL.indexOf('docname=' + wikiName + ":") == -1) {
          attPickerURL = attPickerURL.replace('docname=','docname=' + wikiName + ':');
       }
       $.initializeAttachmentPicker(itemEditURL,attPickerURL,XWModalContent);
       event.preventDefault();
    });
-   //Initialize textarea fields Wysiwyg
+   // Initialize textarea fields Wysiwyg
    #set($wysiwygConfig = {})
    #wysiwyg_storeConfig($wysiwygConfig $doc "HOOKID" true)
    #set($jsVarName = "wysiwygConfig${util.generateRandomString(4)}")
    Wysiwyg.onModuleLoad(function() {
-   $("textarea").each(function(){
+   $("textarea").each(function() {
       var wysiwygConfig = {
          #set($separator = '')
          #foreach($entry in $wysiwygConfig.entrySet())
@@ -661,27 +660,27 @@ initializeItemEditForm : function(itemEditURL,XWModalContent){
       new WysiwygEditor(wysiwygConfig); 
    });
    });
-    //Initialize date picker fields : TODO
-    //Intialize save button
-    $("#editItemForm input[name='action_save']").click(function(event){
+    // Initialize date picker fields : TODO
+    // Intialize save button
+    $("#editItemForm input[name='action_save']").click(function(event) {
        $.saveSuggestDisplayItem(XWModalContent);
        event.preventDefault();
     });
-    //Intialize cancel button
-    $("#editItemForm input[name='action_cancel']").click(function(event){
+    // Intialize cancel button
+    $("#editItemForm input[name='action_cancel']").click(function(event) {
        $(".xdialog-close").click();
        event.preventDefault();
     });
 },
-//Method to intialize the attachment picker after loading it
-initializeAttachmentPicker : function(itemEditURL,attPickerURL,XWModalContent){
+// Method to intialize the attachment picker after loading it
+initializeAttachmentPicker : function(itemEditURL,attPickerURL,XWModalContent) {
  $(XWModalContent).addClass("ajaxloader");
- $(XWModalContent).load(attPickerURL,function(){
+ $(XWModalContent).load(attPickerURL,function() {
  $(XWModalContent).removeClass("ajaxloader");
    //Initialize attachment picker btns
-   $("input[name='action_upload'][type='submit']").click(function(event){
-      //Check input file filed
-      if($("#attachfile").val() == ""){//Empty field
+   $("input[name='action_upload'][type='submit']").click(function(event) {
+      // Check input file filed
+      if ($("#attachfile").val() == "") {// Empty field
            new XWiki.widgets.Notification("$services.localization.render('xe.attachmentSelector.upload.error.noFile')", 'error');
       }
       else
@@ -693,12 +692,12 @@ initializeAttachmentPicker : function(itemEditURL,attPickerURL,XWModalContent){
            var filename = $("#attachfile").val();
            var fpath = filename.replace('\\', '/');
            var pieces = fpath.split('/');
-           if(pieces.length &gt; 0){
+           if (pieces.length &gt; 0) {
                var basename = pieces[pieces.length-1];
                pieces = basename.split('.');
                fileExt = pieces[pieces.length-1].toLowerCase();
            }
-           if(fileExt &amp;&amp; allowedExts.indexOf(fileExt) == -1){
+           if(fileExt &amp;&amp; allowedExts.indexOf(fileExt) == -1) {
                new XWiki.widgets.Notification("$services.localization.render('xe.attachmentSelector.upload.error.badExtension')", 'error');
            }
            else{
@@ -708,34 +707,34 @@ initializeAttachmentPicker : function(itemEditURL,attPickerURL,XWModalContent){
                uploadURL = uploadURL + "?" + params + "&amp;xredirect=" + xredirect;
                new XWiki.widgets.Notification("$services.localization.render('xe.attachmentSelector.upload.inProgress')", 'inprogress');
                jQuery.ajaxFileUpload({
-                  url:uploadURL,
-	          secureuri:false,
-   	          fileElementId:'attachfile',
-	          success: function (data, status){
+                  url: uploadURL,
+	          secureuri: false,
+   	          fileElementId: 'attachfile',
+	          success: function (data, status) {
                   },
-                  complete:function(data, status){
-                      //Reload the page after upload
+                  complete: function(data, status) {
+                      // Reload the page after upload
                       $(".xnotification-inprogress").remove();
                       $.initializeAttachmentPicker(itemEditURL,attPickerURL,XWModalContent);
                   },
-                  error: function (data, status, e){
+                  error: function (data, status, e) {
 	          }
                });
              }  
            }
            event.preventDefault();
         });
-        //Initialize delete attachment btns
-        $("a.delete").click(function(event){
+        // Initialize delete attachment btns
+        $("a.delete").click(function(event) {
             var rep = confirm("$services.localization.render('core.viewers.attachments.delete.confirm')");
-            if(rep){
+            if(rep) {
                var deleteURL = $(this).attr("href");
                var attElem =  $(this).parents().eq(3);
                new XWiki.widgets.Notification("$services.localization.render('core.viewers.attachments.delete.inProgress')",'inprogress');
                $.ajax({
-	          url:deleteURL,
-		  type:'POST',
-		  complete:function(event, XMLHttpRequest, ajaxOptions){
+	          url: deleteURL,
+		  type: 'POST',
+		  complete: function(event, XMLHttpRequest, ajaxOptions) {
                      $(".xnotification-inprogress").remove();
                      new XWiki.widgets.Notification("$services.localization.render('core.viewers.attachments.delete.done')","done");
                      attElem.remove();
@@ -744,17 +743,17 @@ initializeAttachmentPicker : function(itemEditURL,attPickerURL,XWModalContent){
              }
             event.preventDefault();
         });
-        //Initialize select attachment btns
-        $("a.select").click(function(event){
+        // Initialize select attachment btns
+        $("a.select").click(function(event) {
             var selectURL = $(this).attr("href");
             new XWiki.widgets.Notification("Selecting",'inprogress');
             $.ajax({
 	       url:selectURL,
 	       type:'POST',
-	       complete:function(event, XMLHttpRequest, ajaxOptions){
+	       complete: function(event, XMLHttpRequest, ajaxOptions) {
                   $(".xnotification-inprogress").remove();
                   new XWiki.widgets.Notification("Attachment selected","done");
-                  //Reload form with selected image modal
+                  // Reload form with selected image modal
                   $(XWModalContent).load(itemEditURL,function(){
                      $.initializeItemEditForm(itemEditURL,XWModalContent);
                   });
@@ -762,27 +761,27 @@ initializeAttachmentPicker : function(itemEditURL,attPickerURL,XWModalContent){
 	    });
             event.preventDefault();
         });
-        //Initialize attachment picker close button
-        $("#attachment-picker-close").click(function(event){
-           //Reload edit item form
-           $(XWModalContent).load(itemEditURL,function(){
+        // Initialize attachment picker close button
+        $("#attachment-picker-close").click(function(event) {
+           // Reload edit item form
+           $(XWModalContent).load(itemEditURL,function() {
               $.initializeItemEditForm(itemEditURL,XWModalContent);
            });
            event.preventDefault();
         });
     });
 },
-//Save sugggest display item
-saveSuggestDisplayItem : function(XWModalContent){
+// Save sugggest display item
+saveSuggestDisplayItem : function(XWModalContent) {
    var saveURL = $("#editItemForm").attr("action");
    var formData = $("#editItemForm").serialize();
    $.ajax({
 	url:saveURL + "?" + formData,
 	type:'GET',
-	success:function(rep, textStatus, jqXHR){
+	success:function(rep, textStatus, jqXHR) {
 	},
-	complete:function(event, XMLHttpRequest, ajaxOptions){
-          //Close the XWiki Modal
+	complete:function(event, XMLHttpRequest, ajaxOptions) {
+          // Close the XWiki Modal
           $(".xdialog-close").click();
         }
     });
