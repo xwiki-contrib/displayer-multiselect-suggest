@@ -271,8 +271,21 @@
         li.appendChild(editImg);
     }
     li.appendChild(img);
-
-    this.list.appendChild(li);
+    
+    if (this.inEditItemsMode($(this.list).up(0))) {
+       if(this.list.getElementsByClassName("newEntryLi").length &gt; 0){
+          var newEntryLi = this.list.getElementsByClassName("newEntryLi")[0];
+          this.list.insertBefore(li,newEntryLi);
+       }
+       else
+       {
+          this.list.appendChild(li);
+       }
+    }
+    else
+    {
+       this.list.appendChild(li);
+    }
     
     // re-setup the list drag and drop so that the new element can also be moved
     this.setupDragDrop();
@@ -301,7 +314,9 @@
   },
   insertNewEntryBtn : function(element) {
      require(['jquery'],function($){
-       $( '&lt;input type="button" value="Create New Entry" class="button newEntryBtn"/&gt;' ).insertAfter( $(element) );
+       // Insert the create new entry icon after the last item of the items selected list
+       var lastSelectedItem = $('ul.picker-list li:last',$(element).parent());
+       $( '&lt;li class="newEntryLi"&gt;&lt;a href="javascript:;" class="newEntryBtn"&gt;$services.icon.renderHTML('add') $services.localization.render('platform.appwithinminutes.appHomePageAddEntryHint')&lt;/a&gt;&lt;/li&gt;' ).insertAfter(lastSelectedItem);
      });
   },
   
