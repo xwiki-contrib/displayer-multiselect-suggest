@@ -801,9 +801,9 @@ $.initializeNewEntryBtn();
            {"results":false}
       #else
          #set($documentReference = $services.model.createDocumentReference(null, $request.spaceName, $request.docName))
-         #set($title = $util.encodeURI($request.docName))
-         #set($parent = $util.encodeURI($request.parent))
-         #set($template = $util.encodeURI($request.template))
+         #set($title = $escapetool.url($request.docName))
+         #set($parent = $escapetool.url($request.parent))
+         #set($template = $escapetool.url($request.template))
          #set($redirectURL = $xwiki.getURL($documentReference,'edit',"template=${template}&amp;parent=${parent}&amp;title=${title}"))
            {"results":"$redirectURL"}
         #end
