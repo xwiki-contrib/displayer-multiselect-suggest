@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
 <!--
  * See the NOTICE file distributed with this work for additional
  * information regarding copyright ownership.
@@ -61,7 +62,7 @@
         <prettyName>Caching policy</prettyName>
         <relationalStorage>0</relationalStorage>
         <separator> </separator>
-        <separators> ,|</separators>
+        <separators>|, </separators>
         <size>1</size>
         <unmodifiable>0</unmodifiable>
         <values>long|short|default|forbid</values>
@@ -106,7 +107,7 @@
         <prettyName>Use this extension</prettyName>
         <relationalStorage>0</relationalStorage>
         <separator> </separator>
-        <separators> ,|</separators>
+        <separators>|, </separators>
         <size>1</size>
         <unmodifiable>0</unmodifiable>
         <values>currentPage|onDemand|always</values>
@@ -128,7 +129,7 @@
   // TODO: rewrite this using the real suggest picker!
   // -------------------------------
   widgets.SuggestDisplayPicker = Class.create({
-
+  
   initialize: function(element) {
     this.input = element;
     // get the referer input to pass it to the suggest script
@@ -180,6 +181,11 @@
 
     this.prepareList();
     this.input.value = "";
+    
+    // Insert the new entry button
+    if (this.inEditItemsMode($(element).up(0))) {
+       this.insertNewEntryBtn(element);
+    }
   },
   
   prepareList : function() {
@@ -258,13 +264,62 @@
     img.observe('click', this.removeItem.bindAsEventListener(this));
     li.appendChild(span);
     li.appendChild(hiddenInput);
+    // Add the edit button
+    if (this.inEditItemsMode($(this.list).up(0))) {
+        var editImg = new Element("img",{'src': "$xwiki.getSkinFile('icons/silk/page_white_edit.png')"});
+        editImg.observe('click', this.editItem.bindAsEventListener(this));
+        li.appendChild(editImg);
+    }
     li.appendChild(img);
-    this.list.appendChild(li);
+    
+    if (this.inEditItemsMode($(this.list).up(0))) {
+       if(this.list.getElementsByClassName("newEntryLi").length &gt; 0){
+          var newEntryLi = this.list.getElementsByClassName("newEntryLi")[0];
+          this.list.insertBefore(li,newEntryLi);
+       }
+       else
+       {
+          this.list.appendChild(li);
+       }
+    }
+    else
+    {
+       this.list.appendChild(li);
+    }
     
     // re-setup the list drag and drop so that the new element can also be moved
     this.setupDragDrop();
   },
 
+  // Check if in items editable mode
+  inEditItemsMode : function(elem) {
+    return Element.select(elem, '.inEditItemsMode').length &gt; 0;
+  },
+
+  editItem : function(event) {
+    var li = event.findElement('li');
+    var input = li.select("input[type='hidden']");
+    var itemDocRef = input[0].value;
+    // Get item class name and property name
+    require(['jquery'],function($) {
+       var className = $("input[type='hidden'][id$='_className']",$(li).parent().parent()).eq(0).val();
+       var propertyName = $("input[type='hidden'][id$='_propertyName']",$(li).parent().parent()).eq(0).val();
+       var wiki = $("input[type='hidden'].currentWiki",$(li).parent().parent()).eq(0).val();
+       var editURL = "$xwiki.getURL("XWiki.SuggestDisplayEditItems",'view','xpage=plain')";
+       editURL = editURL + '&amp;itemDocRef=' + wiki + ':' + itemDocRef + '&amp;action=editItem' + "&amp;className=" + className + "&amp;propertyName=" + propertyName;
+       // Remove popup old content before showing it
+       $('.xdialog-modal-container').remove();
+       new XWiki.widgets.EditModePopup({pageURL: editURL});
+    });
+  },
+  insertNewEntryBtn : function(element) {
+     require(['jquery'],function($){
+       // Insert the create new entry icon after the last item of the items selected list
+       var lastSelectedItem = $('ul.picker-list li:last',$(element).parent());
+       $( '&lt;li class="newEntryLi"&gt;&lt;a href="javascript:;" class="newEntryBtn"&gt;$services.icon.renderHTML('add') $services.localization.render('platform.appwithinminutes.appHomePageAddEntryHint')&lt;/a&gt;&lt;/li&gt;' ).insertAfter(lastSelectedItem);
+     });
+  },
+  
   removeItem : function(event) {
     var item = event.findElement('li');
     item.remove();
@@ -278,7 +333,6 @@
 });
   return XWiki;
 }(XWiki || {}));</code>
-
     </property>
     <property>
       <name/>
@@ -310,7 +364,7 @@
         <prettyName>Caching policy</prettyName>
         <relationalStorage>0</relationalStorage>
         <separator> </separator>
-        <separators> ,|</separators>
+        <separators>|, </separators>
         <size>1</size>
         <unmodifiable>0</unmodifiable>
         <values>long|short|default|forbid</values>
@@ -326,6 +380,22 @@
         <unmodifiable>0</unmodifiable>
         <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
       </code>
+      <contentType>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>contentType</name>
+        <number>6</number>
+        <prettyName>Content Type</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>CSS|LESS</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </contentType>
       <name>
         <disabled>0</disabled>
         <name>name</name>
@@ -355,7 +425,7 @@
         <prettyName>Use this extension</prettyName>
         <relationalStorage>0</relationalStorage>
         <separator> </separator>
-        <separators> ,|</separators>
+        <separators>|, </separators>
         <size>1</size>
         <unmodifiable>0</unmodifiable>
         <values>currentPage|onDemand|always</values>
@@ -392,6 +462,9 @@ ul.picker-list {
 ul.picker-list .picker-item {
   cursor: move;
 }</code>
+    </property>
+    <property>
+      <contentType>CSS</contentType>
     </property>
     <property>
       <name>Suggest list css</name>
@@ -453,6 +526,31 @@ ul.picker-list .picker-item {
     #end
     ## now display the item in edit mode, to have the suggest and all.
     $doc.displayEdit($propertyClass, $prefix, $object)
+
+    ## Save the className and the class property name in hidden picker (In editItemInPopups mode)
+    #if("$!SuggestDisplayItemsEditable" != '' &amp;&amp; $SuggestDisplayItemsEditable == true)
+       ## New js/css calls
+       #set($discard = $xwiki.ssx.use("XWiki.SuggestDisplayEditItems"))
+       #set($discard = $xwiki.jsx.use("XWiki.SuggestDisplayEditItems"))
+       #set($attachmentPickerDocName = 'XWiki.AttachmentSelector')
+       #set($discard = $xwiki.ssx.use($attachmentPickerDocName))
+       #set($discard = $xwiki.jsx.use($attachmentPickerDocName))
+       ## Wysiwyg
+       #set($lazy = true)
+       #wysiwyg_import($lazy)
+       ## Date picker : TODO
+       &lt;input type="hidden" id="${prefix}_className" value="$object.getxWikiClass().getName()"/&gt;
+       &lt;input type="hidden" id="${prefix}_propertyName" value="$name"/&gt;
+       &lt;input type="hidden" id="itemParent" value="$doc.getDocumentReference()"/&gt;
+       #if("$!SuggestDisplayEditModeSpace" != '')
+       &lt;input type="hidden" id="itemSpace" value="$!SuggestDisplayEditModeSpace"/&gt;
+       #else
+       &lt;input type="hidden" id="itemSpace" value="$doc.getSpace()"/&gt;
+       #end
+       &lt;input type="hidden" class="inEditItemsMode" value="1"/&gt;
+       &lt;input type="hidden" class="currentWiki" value="$services.wiki.currentWikiId"/&gt;
+    #end
+    
     ## --------------------------------
     ## This multiple suggest feature overwrites simple select suggest
     ## -&gt; call multi suggest for current obj &amp; prop
