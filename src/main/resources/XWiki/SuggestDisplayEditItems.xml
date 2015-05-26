@@ -722,13 +722,18 @@ $.initializeNewEntryBtn();
 * Get item className from hibernate query
 *#
 #macro(getItemClassName $className $propertyName)
+   ## TODO: improve this macro
    #set($itemClassName = "")
-   #set($p = $xwiki.getDocument($className).getxWikiClass().get($propertyName).getPropertyClass())
-   #set($hibquery = "$!p.getSql()")
-   #set($clsStartIndex = $hibquery.toLowerCase().indexOf(".classname='"))
-   #set($q1 = $hibquery.substring($mathtool.add($clsStartIndex,12)))
-   #set($clsEndIndex = $q1.toLowerCase().indexOf("'"))
-   #set($itemClassName = $q1.substring(0,$clsEndIndex))
+   #set($propertyClass = $xwiki.getDocument($className).getxWikiClass().get($propertyName).getPropertyClass())
+   #set($hibquery = $propertyClass.sql)
+   #set($clsStartIndex = $hibquery.toLowerCase().indexOf('.classname'))
+   ## The query can use ' or " as string delemitor, so we enforce the usage of '.
+   ## I am quite confident that the className does not contain ' or " characters, but if it is the case
+   ## we will have a bug.
+   #set($subQuery = $hibquery.substring($clsStartIndex).replaceAll('"', "'"))
+   #set($results = $subQuery.split("'"))
+   ## We get the second result, the one between the 2 ' characters
+   #set($itemClassName = $results[1])
 #end
 #set($action = $request.action)
 #if("$!action" != "")
