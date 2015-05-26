@@ -316,7 +316,17 @@
      require(['jquery'],function($){
        // Insert the create new entry icon after the last item of the items selected list
        var lastSelectedItem = $('ul.picker-list li:last',$(element).parent());
-       $( '&lt;li class="newEntryLi"&gt;&lt;a href="javascript:;" class="newEntryBtn"&gt;$services.icon.renderHTML('add') $services.localization.render('platform.appwithinminutes.appHomePageAddEntryHint')&lt;/a&gt;&lt;/li&gt;' ).insertAfter(lastSelectedItem);
+       if(lastSelectedItem.length &gt; 0){
+         $( '&lt;li class="newEntryLi"&gt;&lt;a href="javascript:;" class="newEntryBtn"&gt;' + 
+            '$services.icon.renderHTML('add') $services.localization.render('platform.appwithinminutes.appHomePageAddEntryHint')&lt;/a&gt;&lt;/li&gt;'
+          ).insertAfter(lastSelectedItem);
+       }
+       else
+       {
+          $('ul.picker-list',$(element).parent()).append('&lt;li class="newEntryLi"&gt;&lt;a href="javascript:;" class="newEntryBtn"&gt;' +
+            '$services.icon.renderHTML('add') $services.localization.render('platform.appwithinminutes.appHomePageAddEntryHint')&lt;/a&gt;&lt;/li&gt;'
+          );
+       }
      });
   },
   
