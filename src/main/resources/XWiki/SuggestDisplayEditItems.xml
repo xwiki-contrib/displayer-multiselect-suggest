@@ -163,7 +163,7 @@ XWiki.widgets.EditModePopup = Class.create(XWiki.widgets.ModalPopup, {
         content.insert(response);
         require(['jquery'],function($){
            var itemEditURL = data.pageURL;
-           $.initializeItemEditForm(itemEditURL,content);
+           $.initializeItemEditForm(itemEditURL,content,false);
            $.checkItemExists(content);
         });
       },
@@ -404,13 +404,7 @@ checkItemExists : function(XWModalContent) {
                  // Load item edit file
                  var editNewItemFormURL = rep.results + "&amp;xpage=plain";
                  $(XWModalContent).load(editNewItemFormURL, function() {
-                     var saveURL = editNewItemFormURL.replace('/edit/','/save/');
-                     var inputs = ' &lt;input class="btn btn-primary" type="button" name="action_save" title="Alt+Shift+S" value="Save"&gt;';
-                     inputs += ' &lt;input class="btn btn-default" type="button" name="action_cancel" title="Alt+C" value="Cancel"&gt;';
-                     inputs += '&lt;input type="hidden" name="form_token" value="$!{services.csrf.getToken()}" /&gt;';
-                     inputs += '&lt;input type="hidden" name="xredirect" value="" /&gt;';
-                     $(this).html('&lt;form action="' + saveURL + '" id="editItemForm"&gt;' + $(this).html() + inputs + '&lt;/form&gt;');
-                     $.initializeItemEditForm(editNewItemFormURL,XWModalContent);
+                   $.initializeItemEditForm(editNewItemFormURL,XWModalContent,true);
                  });
              }
          }
@@ -427,8 +421,20 @@ checkItemExists : function(XWModalContent) {
    });
 },
 // Method to intialize the item edit form
-initializeItemEditForm : function(itemEditURL,XWModalContent) {
+initializeItemEditForm : function(itemEditURL,XWModalContent,isNewItem) {
    $(".xdialog-box").addClass("xwmlrg");
+   // If the item is a new one (not yet saved) then : 
+   // Enclose the modal popup content in html form
+   // Add action_save, action_cancel buttons ...etc.
+   if (isNewItem) {
+     var itemSaveURL = itemEditURL.replace('/edit/','/save/');
+     var inputs = '&lt;input class="btn btn-primary" type="button" name="action_save" title="Alt+Shift+S" value="Save"&gt;';
+     inputs += '&lt;input class="btn btn-default" type="button" name="action_cancel" title="Alt+C" value="Cancel"&gt;';
+     inputs += '&lt;input type="hidden" name="form_token" value="$!{services.csrf.getToken()}" /&gt;';
+     inputs += '&lt;input type="hidden" name="xredirect" value="" /&gt;';
+     inputs += '&lt;input type="hidden" name="wikiName" id="wikiName" value="$services.wiki.currentWikiId" /&gt;';
+     $(XWModalContent).html('&lt;form action="' + itemSaveURL + '" id="editItemForm"&gt;' + $(XWModalContent).html() + inputs + '&lt;/form&gt;');
+   }
    // Initialize attachment-picker fields
    $(".attachment-picker-start").click(function(event) {
       var attPickerURL = $(this).attr("href") + "&amp;xpage=plain";
@@ -437,7 +443,7 @@ initializeItemEditForm : function(itemEditURL,XWModalContent) {
       if (attPickerURL.indexOf('docname=' + wikiName + ":") == -1) {
          attPickerURL = attPickerURL.replace('docname=','docname=' + wikiName + ':');
       }
-      $.initializeAttachmentPicker(itemEditURL,attPickerURL,XWModalContent);
+      $.initializeAttachmentPicker(itemEditURL,attPickerURL,XWModalContent,isNewItem);
       event.preventDefault();
    });
    // Initialize textarea fields Wysiwyg
@@ -473,7 +479,7 @@ initializeItemEditForm : function(itemEditURL,XWModalContent) {
     });
 },
 // Method to intialize the attachment picker after loading it
-initializeAttachmentPicker : function(itemEditURL,attPickerURL,XWModalContent) {
+initializeAttachmentPicker : function(itemEditURL,attPickerURL,XWModalContent,isNewItem) {
  $(XWModalContent).addClass("ajaxloader");
  $(XWModalContent).load(attPickerURL,function() {
  $(XWModalContent).removeClass("ajaxloader");
@@ -507,8 +513,26 @@ initializeAttachmentPicker : function(itemEditURL,attPickerURL,XWModalContent) {
                      success: function(){
                         // Reload the page after upload
                         $(".xnotification-inprogress").remove();
-                        $.initializeAttachmentPicker(itemEditURL,attPickerURL,XWModalContent);  
-                     }
+                        if (!isNewItem) {
+                          $.initializeAttachmentPicker(itemEditURL,attPickerURL,XWModalContent,isNewItem);
+                        }
+                       else
+                        {
+                           // Save the item, close the attachmeents selector popup and show the item edit form
+                           var itemSaveURL = itemEditURL.replace('/edit/','/save/') + "&amp;form_token=" + "$services.csrf.getToken()";
+                           new XWiki.widgets.Notification("$services.localization.render('xe.attachmentSelector.upload.inProgress')", 'inprogress');
+                           $.ajax({
+                             url:itemSaveURL,
+                             complete: function(event, XMLHttpRequest, ajaxOptions) {
+                                // Refresh the attachment selector popup
+                                $(XWModalContent).load(attPickerURL,function() {
+                                   $.initializeAttachmentPicker(itemEditURL,attPickerURL,XWModalContent,isNewItem);
+                                   $(".xnotification-inprogress").remove();
+                                });
+                             }
+                           });
+                         }   
+                      }
                   });
                });
              }  
@@ -546,7 +570,7 @@ initializeAttachmentPicker : function(itemEditURL,attPickerURL,XWModalContent) {
                   new XWiki.widgets.Notification("Attachment selected","done");
                   // Reload form with selected image modal
                   $(XWModalContent).load(itemEditURL,function(){
-                     $.initializeItemEditForm(itemEditURL,XWModalContent);
+                     $.initializeItemEditForm(itemEditURL,XWModalContent,isNewItem);
                   });
                }
 	    });
@@ -556,7 +580,7 @@ initializeAttachmentPicker : function(itemEditURL,attPickerURL,XWModalContent) {
         $("#attachment-picker-close").click(function(event) {
            // Reload edit item form
            $(XWModalContent).load(itemEditURL,function() {
-              $.initializeItemEditForm(itemEditURL,XWModalContent);
+              $.initializeItemEditForm(itemEditURL,XWModalContent,isNewItem);
            });
            event.preventDefault();
         });
