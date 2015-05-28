@@ -362,7 +362,7 @@ require.config({
       <cache>long</cache>
     </property>
     <property>
-      <code>require(['jquery'],function($){
+      <code>require(['jquery','xwiki-meta'],function($, xm){
 $.extend({
 // Method to initialize the new item btn
 initializeNewEntryBtn : function() {
@@ -428,7 +428,7 @@ initializeItemEditForm : function(itemEditURL,XWModalContent,isNewItem) {
    // Add action_save, action_cancel buttons ...etc.
    if (isNewItem) {
      var itemSaveURL = itemEditURL.replace('/edit/','/save/');
-     var inputs = '&lt;input class="btn btn-primary" type="button" name="action_save" title="Alt+Shift+S" value="Save"&gt;';
+     var inputs = '&lt;input class="btn btn-primary" type="button" name="action_save" title="Alt+Shift+S" value="Save"&gt; ';
      inputs += '&lt;input class="btn btn-default" type="button" name="action_cancel" title="Alt+C" value="Cancel"&gt;';
      inputs += '&lt;input type="hidden" name="form_token" value="$!{services.csrf.getToken()}" /&gt;';
      inputs += '&lt;input type="hidden" name="xredirect" value="" /&gt;';
@@ -519,7 +519,10 @@ initializeAttachmentPicker : function(itemEditURL,attPickerURL,XWModalContent,is
                        else
                         {
                            // Save the item, close the attachmeents selector popup and show the item edit form
-                           var itemSaveURL = itemEditURL.replace('/edit/','/save/') + "&amp;form_token=" + "$services.csrf.getToken()";
+                           // Note that the require['xwiki-meta'] (meta information about the current document) is not available on  
+                           // XWiki versions &lt; 6.3, then we get the form_token directly from the DOM.
+                           var form_token = xm ? xm.form_token : $('meta[name="form_token"]').attr('content');
+                           var itemSaveURL = itemEditURL.replace('/edit/','/save/') + "&amp;form_token=" + form_token;
                            new XWiki.widgets.Notification("$services.localization.render('xe.attachmentSelector.upload.inProgress')", 'inprogress');
                            $.ajax({
                              url:itemSaveURL,
