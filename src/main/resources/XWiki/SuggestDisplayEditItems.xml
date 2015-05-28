@@ -428,9 +428,10 @@ initializeItemEditForm : function(itemEditURL,XWModalContent,isNewItem) {
    // Add action_save, action_cancel buttons ...etc.
    if (isNewItem) {
      var itemSaveURL = itemEditURL.replace('/edit/','/save/');
+     var form_token = xm ? xm.form_token : $('meta[name="form_token"]').attr('content');
      var inputs = '&lt;input class="btn btn-primary" type="button" name="action_save" title="Alt+Shift+S" value="Save"&gt; ';
      inputs += '&lt;input class="btn btn-default" type="button" name="action_cancel" title="Alt+C" value="Cancel"&gt;';
-     inputs += '&lt;input type="hidden" name="form_token" value="$!{services.csrf.getToken()}" /&gt;';
+     inputs += '&lt;input type="hidden" name="form_token" value="' + form_token + '" /&gt;';
      inputs += '&lt;input type="hidden" name="xredirect" value="" /&gt;';
      inputs += '&lt;input type="hidden" name="wikiName" id="wikiName" value="$services.wiki.currentWikiId" /&gt;';
      $(XWModalContent).html('&lt;form action="' + itemSaveURL + '" id="editItemForm"&gt;' + $(XWModalContent).html() + inputs + '&lt;/form&gt;');
