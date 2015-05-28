@@ -429,17 +429,18 @@ initializeItemEditForm : function(itemEditURL,XWModalContent,isNewItem) {
    if (isNewItem) {
      var itemSaveURL = itemEditURL.replace('/edit/','/save/');
      var form_token = xm ? xm.form_token : $('meta[name="form_token"]').attr('content');
+     var wikiName = xm ? xm.wiki : $('meta[name="wiki"]').attr('content');
      var inputs = '&lt;input class="btn btn-primary" type="button" name="action_save" title="Alt+Shift+S" value="Save"&gt; ';
      inputs += '&lt;input class="btn btn-default" type="button" name="action_cancel" title="Alt+C" value="Cancel"&gt;';
      inputs += '&lt;input type="hidden" name="form_token" value="' + form_token + '" /&gt;';
      inputs += '&lt;input type="hidden" name="xredirect" value="" /&gt;';
-     inputs += '&lt;input type="hidden" name="wikiName" id="wikiName" value="$services.wiki.currentWikiId" /&gt;';
+     inputs += '&lt;input type="hidden" name="wikiName" id="wikiName" value="' + wikiName + '" /&gt;';
      $(XWModalContent).html('&lt;form action="' + itemSaveURL + '" id="editItemForm"&gt;' + $(XWModalContent).html() + inputs + '&lt;/form&gt;');
    }
    // Initialize attachment-picker fields
    $(".attachment-picker-start").click(function(event) {
       var attPickerURL = $(this).attr("href") + "&amp;xpage=plain";
-      var wikiName = $("#wikiName").val();
+      var wikiName = xm ? xm.wiki : $('meta[name="wiki"]').attr('content');
       attPickerURL = attPickerURL + "&amp;wikiName=" + wikiName;
       if (attPickerURL.indexOf('docname=' + wikiName + ":") == -1) {
          attPickerURL = attPickerURL.replace('docname=','docname=' + wikiName + ':');
