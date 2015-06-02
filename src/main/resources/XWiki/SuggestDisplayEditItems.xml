@@ -162,6 +162,9 @@ XWiki.widgets.EditModePopup = Class.create(XWiki.widgets.ModalPopup, {
         var response = transport.responseText || "no response text";
         content.insert(response);
         require(['jquery'],function($){
+           // Add a css class to the popup modal container to distinguish the edit mode popup from other popups
+           // This information will be used to clear only the content of the edit mode popup when it is displayed on an another popup
+           $(content).closest('.xdialog-modal-container').addClass('suggestDisplayEditItemModal');
            var itemEditURL = data.pageURL;
            $.initializeItemEditForm(itemEditURL,content,false);
            $.checkItemExists(content);
@@ -375,13 +378,13 @@ initializeNewEntryBtn : function() {
       // Open XWiki Modal
       var newItemURL = "$xwiki.getURL("XWiki.SuggestDisplayEditItems",'view','xpage=plain')";
       newItemURL = newItemURL + '&amp;action=newItem' + "&amp;className=" + className + "&amp;propertyName=" + propertyName + "&amp;parent=" + itemParent + "&amp;space=" + itemSpace;
-      $('.xdialog-modal-container').remove();
+      $('.xdialog-modal-container.suggestDisplayEditItemModal').remove();
       new XWiki.widgets.EditModePopup({pageURL: newItemURL});
    });
 },
 // Check if new items exists
 checkItemExists : function(XWModalContent) {
-   $(".checkItemExists").click(function(event) {
+   $(".suggestDisplayEditItemModal .checkItemExists").click(function(event) {
    var checkURL = "$xwiki.getURL('XWiki.SuggestDisplayEditItems','view','xpage=plain&amp;outputSyntax=plain&amp;action=checkItemExists')";
    var data = $(this).parents().eq(2).serialize();
    checkURL = checkURL + "&amp;" + data;
@@ -438,7 +441,7 @@ initializeItemEditForm : function(itemEditURL,XWModalContent,isNewItem) {
      $(XWModalContent).html('&lt;form action="' + itemSaveURL + '" id="editItemForm"&gt;' + $(XWModalContent).html() + inputs + '&lt;/form&gt;');
    }
    // Initialize attachment-picker fields
-   $(".attachment-picker-start").click(function(event) {
+   $(".suggestDisplayEditItemModal .attachment-picker-start").click(function(event) {
       var attPickerURL = $(this).attr("href") + "&amp;xpage=plain";
       var wikiName = xm ? xm.wiki : $('meta[name="wiki"]').attr('content');
       attPickerURL = attPickerURL + "&amp;wikiName=" + wikiName;
@@ -453,7 +456,7 @@ initializeItemEditForm : function(itemEditURL,XWModalContent,isNewItem) {
    #wysiwyg_storeConfig($wysiwygConfig $doc "HOOKID" true)
    #set($jsVarName = "wysiwygConfig${util.generateRandomString(4)}")
    Wysiwyg.onModuleLoad(function() {
-   $("textarea").each(function() {
+   $(".suggestDisplayEditItemModal textarea").each(function() {
       var wysiwygConfig = {
          #set($separator = '')
          #foreach($entry in $wysiwygConfig.entrySet())
@@ -476,7 +479,7 @@ initializeItemEditForm : function(itemEditURL,XWModalContent,isNewItem) {
     });
     // Intialize cancel button
     $("#editItemForm input[name='action_cancel']").click(function(event) {
-       $(".xdialog-close").click();
+       $(".suggestDisplayEditItemModal .xdialog-close").click();
        event.preventDefault();
     });
 },
@@ -486,7 +489,7 @@ initializeAttachmentPicker : function(itemEditURL,attPickerURL,XWModalContent,is
  $(XWModalContent).load(attPickerURL,function() {
  $(XWModalContent).removeClass("ajaxloader");
    //Initialize attachment picker btns
-   $("input[name='action_upload'][type='submit']").click(function(event) {
+   $(".suggestDisplayEditItemModal input[name='action_upload'][type='submit']").click(function(event) {
       // Check input file filed
       if ($("#attachfile").val() == "") {// Empty field
            new XWiki.widgets.Notification("$services.localization.render('xe.attachmentSelector.upload.error.noFile')", 'error');
@@ -545,7 +548,7 @@ initializeAttachmentPicker : function(itemEditURL,attPickerURL,XWModalContent,is
            event.preventDefault();
         });
         // Initialize delete attachment btns
-        $("a.delete").click(function(event) {
+        $(".suggestDisplayEditItemModal a.delete").click(function(event) {
             var rep = confirm("$services.localization.render('core.viewers.attachments.delete.confirm')");
             if(rep) {
                var deleteURL = $(this).attr("href");
@@ -564,7 +567,7 @@ initializeAttachmentPicker : function(itemEditURL,attPickerURL,XWModalContent,is
             event.preventDefault();
         });
         // Initialize select attachment btns
-        $("a.select").click(function(event) {
+        $(".suggestDisplayEditItemModal a.select").click(function(event) {
             var selectURL = $(this).attr("href");
             new XWiki.widgets.Notification("Selecting",'inprogress');
             $.ajax({
@@ -602,7 +605,7 @@ saveSuggestDisplayItem : function(XWModalContent) {
 	},
 	complete:function(event, XMLHttpRequest, ajaxOptions) {
           // Close the XWiki Modal
-          $(".xdialog-close").click();
+          $(".suggestDisplayEditItemModal .xdialog-close").click();
         }
     });
 }

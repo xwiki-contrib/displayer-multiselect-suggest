@@ -308,7 +308,7 @@
        var editURL = "$xwiki.getURL("XWiki.SuggestDisplayEditItems",'view','xpage=plain')";
        editURL = editURL + '&amp;itemDocRef=' + wiki + ':' + itemDocRef + '&amp;action=editItem' + "&amp;className=" + className + "&amp;propertyName=" + propertyName;
        // Remove popup old content before showing it
-       $('.xdialog-modal-container').remove();
+       $('.xdialog-modal-container.suggestDisplayEditItemModal').remove();
        new XWiki.widgets.EditModePopup({pageURL: editURL});
     });
   },
