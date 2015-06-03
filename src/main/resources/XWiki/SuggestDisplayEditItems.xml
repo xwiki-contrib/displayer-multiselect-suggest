@@ -425,7 +425,7 @@ checkItemExists : function(XWModalContent) {
 },
 // Method to intialize the item edit form
 initializeItemEditForm : function(itemEditURL,XWModalContent,isNewItem) {
-   $(".xdialog-box").addClass("xwmlrg");
+   $(".suggestDisplayEditItemModal .xdialog-box").addClass("xwmplrg");
    // If the item is a new one (not yet saved) then : 
    // Enclose the modal popup content in html form
    // Add action_save, action_cancel buttons ...etc.
@@ -719,8 +719,8 @@ $.initializeNewEntryBtn();
       <cache>long</cache>
     </property>
     <property>
-      <code>.xwmlrg{
-   width:90%;
+      <code>.xwmplrg{
+   width:80%;
 }
 .ajaxloader{
    background-image: url("$xwiki.getSkinFile('icons/xwiki/ajax-loader-large.gif')");
