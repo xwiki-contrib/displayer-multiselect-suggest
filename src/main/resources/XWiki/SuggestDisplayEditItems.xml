@@ -549,10 +549,9 @@ initializeAttachmentPicker : function(itemEditURL,attPickerURL,XWModalContent,is
         });
         // Initialize delete attachment btns
         $(".suggestDisplayEditItemModal a.delete").click(function(event) {
-            var rep = confirm("$services.localization.render('core.viewers.attachments.delete.confirm')");
-            if(rep) {
-               var deleteURL = $(this).attr("href");
-               var attElem =  $(this).parents().eq(3);
+            var deleteURL = $(this).attr("href");
+            var attElem =  $(this).parents().eq(3);
+            new XWiki.widgets.ConfirmationBox({onYes: function() {
                new XWiki.widgets.Notification("$services.localization.render('core.viewers.attachments.delete.inProgress')",'inprogress');
                $.ajax({
 	          url: deleteURL,
@@ -563,7 +562,7 @@ initializeAttachmentPicker : function(itemEditURL,attPickerURL,XWModalContent,is
                      attElem.remove();
                   }
 	       });
-             }
+             }}, {confirmationText:"$services.localization.render('core.viewers.attachments.delete.confirm')"});
             event.preventDefault();
         });
         // Initialize select attachment btns
