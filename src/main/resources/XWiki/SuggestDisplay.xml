@@ -525,7 +525,7 @@ ul.picker-list .picker-item {
         #end
       #end
 
-      &lt;option label="$k" value="$v" selected="selected" /&gt;
+      &lt;option label="$escapetool.xml($k)" value="$escapetool.xml($v)" selected="selected" /&gt;
     #end
     #if ($value.size() &gt; 0)
       &lt;/select&gt;
@@ -603,7 +603,7 @@ ul.picker-list .picker-item {
       #end{{/html}}
 
     #else
-      $title
+      $escapetool.xml($title)
     #end
   #end
 #end
