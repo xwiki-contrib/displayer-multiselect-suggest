@@ -603,7 +603,7 @@ ul.picker-list .picker-item {
       #end{{/html}}
 
     #else
-      $escapetool.xml($title)
+      $title
     #end
   #end
 #end
