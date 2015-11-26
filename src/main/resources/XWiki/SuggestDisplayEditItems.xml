@@ -19,126 +19,29 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
 -->
 
-<xwikidoc version="1.1">
+<xwikidoc>
   <web>XWiki</web>
   <name>SuggestDisplayEditItems</name>
   <language/>
   <defaultLanguage/>
   <translation>0</translation>
-  <creator>xwiki:XWiki.Admin</creator>
-  <creationDate>1425480288000</creationDate>
   <parent>XWiki.WebHome</parent>
+  <creator>xwiki:XWiki.Admin</creator>
   <author>xwiki:XWiki.Admin</author>
+  <customClass/>
   <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
-  <date>1448540058000</date>
-  <contentUpdateDate>1448372514000</contentUpdateDate>
+  <creationDate>1425480288000</creationDate>
+  <date>1426150490000</date>
+  <contentUpdateDate>1426150271000</contentUpdateDate>
   <version>1.1</version>
   <title>SuggestDisplayEditItems</title>
+  <defaultTemplate/>
+  <validationScript/>
   <comment/>
   <minorEdit>false</minorEdit>
   <syntaxId>xwiki/2.1</syntaxId>
   <hidden>false</hidden>
-  <content>{{velocity}}
-#**
-* Get item className from hibernate query
-*#
-#macro(getItemClassName $className $propertyName)
-   ## TODO: improve this macro
-   #set($itemClassName = "")
-   #set($propertyClass = $xwiki.getDocument($className).getxWikiClass().get($propertyName).getPropertyClass())
-   #set($hibquery = $propertyClass.sql)
-   #set($clsStartIndex = $hibquery.toLowerCase().indexOf('.classname'))
-   ## The query can use ' or " as string delemitor, so we enforce the usage of '.
-   ## I am quite confident that the className does not contain ' or " characters, but if it is the case
-   ## we will have a bug.
-   #set($subQuery = $hibquery.substring($clsStartIndex).replaceAll('"', "'"))
-   #set($results = $subQuery.split("'"))
-   ## We get the second result, the one between the 2 ' characters
-   #set($itemClassName = $results[1])
-#end
-#set($action = $request.action)
-#if("$!action" != "")
-   #if($action == "editItem" &amp;&amp; "$!request.itemDocRef" != "" &amp;&amp; $xwiki.exists("$request.itemDocRef") &amp;&amp; "$!request.className" != "" &amp;&amp; "$!request.propertyName" != "")
-     #set($itemDocRef = $request.itemDocRef)
-     #if($xwiki.hasAccessLevel('edit',$xcontext.user,${itemDocRef}))
-       #set($discard = $context.setDisplayMode("edit"))
-       #set($className = $request.className)
-       #set($propertyName = $request.propertyName)
-       #getItemClassName($className,$propertyName)
-       #set($doc = $xwiki.getDocument($itemDocRef))
-       #set($wikiName = $doc.getDocumentReference().getWikiReference().getName())
-       #if($itemClassName != "" &amp;&amp; $xwiki.exists($itemClassName))
-          #set($itemClassSheet = $itemClassName.substring(0,$itemClassName.indexOf('Class')))
-          #set($itemClassSheet = "${itemClassSheet}Sheet")
-          ## To show the edit attachment button of the attachment selector we need to check 
-          ## if the current user has edit rights on the item document and then set the $hasEdit variable to true 
-          #set($itemEditPerm = $xwiki.hasAccessLevel('edit',$xcontext.user,${itemDocRef}))
-          #if($itemEditPerm &amp;&amp; !$hasEdit)
-             #set($hasEdit = true)
-          #end
-          {{html wiki="true"}}
-          &lt;form action="$xwiki.getURL($itemDocRef,'save')" id="editItemForm"&gt;
-            {{include reference="$itemClassSheet"/}}
-             &lt;input type="hidden" id="wikiName" value="$wikiName"/&gt;
-             &lt;input type="hidden" name="form_token" value="$!{services.csrf.getToken()}" /&gt;
-             &lt;input type="hidden" name="xredirect" value="" /&gt;
-             &lt;input class="btn btn-primary" type="button" name="action_save" title="Alt+Shift+S" value="Save"&gt;
-             &lt;input class="btn btn-default" type="button" name="action_cancel" title="Alt+C" value="Cancel"&gt;
-          &lt;/form&gt;
-          {{/html}}
-       #else
-          ##TODO
-       #end
-     #else
-
-        {{error}}$services.localization.render('error') : $services.localization.render('notallowed'){{/error}}
-
-     #end 
-   #elseif($action == "newItem" &amp;&amp; "$!request.className" != "" &amp;&amp; "$!request.propertyName" != "" &amp;&amp; "$!request.parent" != "" &amp;&amp; "$!request.space" != "")
-       #set($className = $request.className)
-       #set($propertyName = $request.propertyName)
-       #set($parent = $request.parent)
-       #set($space = $request.space)
-       #getItemClassName($className,$propertyName)
-       #if($itemClassName != "" &amp;&amp; $xwiki.exists($itemClassName))
-          #set($itemClassTemplate = $itemClassName.substring(0,$itemClassName.indexOf('Class')))
-          #set($itemClassTemplate = "${itemClassTemplate}Template")
-       #else
-          ##TODO
-       #end
-       {{html}}
-         &lt;form action="" id="newdoc" method="post"&gt;
-            &lt;div&gt;
-              &lt;input type="hidden" name="form_token" value="$!{services.csrf.getToken()}" /&gt;
-              &lt;input type="hidden" name="parent" value="${parent}"/&gt;
-              &lt;input type="hidden" name="template" value="${itemClassTemplate}"/&gt;
-              &lt;input type="hidden" name="sheet" value="1"/&gt;
-              &lt;label for="spaceName"&gt;Space: &lt;/label&gt;&lt;input type="text" id="spaceName" name="spaceName" value="${space}" size="8"/&gt;
-              &lt;label for="docName"&gt;Document: &lt;/label&gt;&lt;input type="text" id="docName" name="docName" value="" class="withTip"'/&gt;         
-              &lt;span class="buttonwrapper"&gt;&lt;input type="button" value="Create this document" class="button checkItemExists"/&gt;&lt;/span&gt;
-            &lt;/div&gt;
-          &lt;/form&gt;
-        {{/html}}
-   #elseif($action == "checkItemExists" &amp;&amp; "$!request.spaceName" != "" &amp;&amp; "$!request.docName" != "")
-      #set($itemRef = "${request.spaceName}.${request.docName}")
-      #if($xwiki.exists($itemRef))
-           {"results":false}
-      #else
-         #set($documentReference = $services.model.createDocumentReference(null, $request.spaceName, $request.docName))
-         #set($title = $escapetool.url($request.docName))
-         #set($parent = $escapetool.url($request.parent))
-         #set($template = $escapetool.url($request.template))
-         #set($redirectURL = $xwiki.getURL($documentReference,'edit',"template=${template}&amp;parent=${parent}&amp;title=${title}"))
-           {"results":"$redirectURL"}
-        #end
-   #end
-#end
-{{/velocity}}</content>
   <object>
-    <name>XWiki.SuggestDisplayEditItems</name>
-    <number>0</number>
-    <className>XWiki.JavaScriptExtension</className>
-    <guid>c25c0c80-67dc-480a-ab8f-db047209ad14</guid>
     <class>
       <name>XWiki.JavaScriptExtension</name>
       <customClass/>
@@ -158,7 +61,7 @@
         <prettyName>Caching policy</prettyName>
         <relationalStorage>0</relationalStorage>
         <separator> </separator>
-        <separators> ,|</separators>
+        <separators>|, </separators>
         <size>1</size>
         <unmodifiable>0</unmodifiable>
         <values>long|short|default|forbid</values>
@@ -203,13 +106,17 @@
         <prettyName>Use this extension</prettyName>
         <relationalStorage>0</relationalStorage>
         <separator> </separator>
-        <separators> ,|</separators>
+        <separators>|, </separators>
         <size>1</size>
         <unmodifiable>0</unmodifiable>
         <values>currentPage|onDemand|always</values>
         <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
       </use>
     </class>
+    <name>XWiki.SuggestDisplayEditItems</name>
+    <number>0</number>
+    <className>XWiki.JavaScriptExtension</className>
+    <guid>c25c0c80-67dc-480a-ab8f-db047209ad14</guid>
     <property>
       <cache>long</cache>
     </property>
@@ -283,10 +190,6 @@ XWiki.widgets.EditModePopup = Class.create(XWiki.widgets.ModalPopup, {
     </property>
   </object>
   <object>
-    <name>XWiki.SuggestDisplayEditItems</name>
-    <number>1</number>
-    <className>XWiki.JavaScriptExtension</className>
-    <guid>6afc2baf-1884-49fa-a64f-94053bc12537</guid>
     <class>
       <name>XWiki.JavaScriptExtension</name>
       <customClass/>
@@ -306,7 +209,7 @@ XWiki.widgets.EditModePopup = Class.create(XWiki.widgets.ModalPopup, {
         <prettyName>Caching policy</prettyName>
         <relationalStorage>0</relationalStorage>
         <separator> </separator>
-        <separators> ,|</separators>
+        <separators>|, </separators>
         <size>1</size>
         <unmodifiable>0</unmodifiable>
         <values>long|short|default|forbid</values>
@@ -351,13 +254,17 @@ XWiki.widgets.EditModePopup = Class.create(XWiki.widgets.ModalPopup, {
         <prettyName>Use this extension</prettyName>
         <relationalStorage>0</relationalStorage>
         <separator> </separator>
-        <separators> ,|</separators>
+        <separators>|, </separators>
         <size>1</size>
         <unmodifiable>0</unmodifiable>
         <values>currentPage|onDemand|always</values>
         <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
       </use>
     </class>
+    <name>XWiki.SuggestDisplayEditItems</name>
+    <number>1</number>
+    <className>XWiki.JavaScriptExtension</className>
+    <guid>6afc2baf-1884-49fa-a64f-94053bc12537</guid>
     <property>
       <cache>long</cache>
     </property>
@@ -379,10 +286,6 @@ require.config({
     </property>
   </object>
   <object>
-    <name>XWiki.SuggestDisplayEditItems</name>
-    <number>2</number>
-    <className>XWiki.JavaScriptExtension</className>
-    <guid>d536d42d-2fee-4d9d-98b1-f9aa342c77be</guid>
     <class>
       <name>XWiki.JavaScriptExtension</name>
       <customClass/>
@@ -402,7 +305,7 @@ require.config({
         <prettyName>Caching policy</prettyName>
         <relationalStorage>0</relationalStorage>
         <separator> </separator>
-        <separators> ,|</separators>
+        <separators>|, </separators>
         <size>1</size>
         <unmodifiable>0</unmodifiable>
         <values>long|short|default|forbid</values>
@@ -447,13 +350,17 @@ require.config({
         <prettyName>Use this extension</prettyName>
         <relationalStorage>0</relationalStorage>
         <separator> </separator>
-        <separators> ,|</separators>
+        <separators>|, </separators>
         <size>1</size>
         <unmodifiable>0</unmodifiable>
         <values>currentPage|onDemand|always</values>
         <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
       </use>
     </class>
+    <name>XWiki.SuggestDisplayEditItems</name>
+    <number>2</number>
+    <className>XWiki.JavaScriptExtension</className>
+    <guid>d536d42d-2fee-4d9d-98b1-f9aa342c77be</guid>
     <property>
       <cache>long</cache>
     </property>
@@ -535,9 +442,6 @@ initializeItemEditForm : function(itemEditURL,XWModalContent,isNewItem) {
    }
    // Initialize attachment-picker fields
    $(".suggestDisplayEditItemModal .attachment-picker-start").click(function(event) {
-      // Add the form fields value to the "itemEditURL", for saving these values and 
-      // re fill the edit form with those values if we go into another popup like the attachments selector   
-      itemEditURL += '&amp;' + $("#editItemForm").serialize();
       var attPickerURL = $(this).attr("href") + "&amp;xpage=plain";
       var wikiName = xm ? xm.wiki : $('meta[name="wiki"]').attr('content');
       attPickerURL = attPickerURL + "&amp;wikiName=" + wikiName;
@@ -719,10 +623,6 @@ $.initializeNewEntryBtn();
     </property>
   </object>
   <object>
-    <name>XWiki.SuggestDisplayEditItems</name>
-    <number>0</number>
-    <className>XWiki.StyleSheetExtension</className>
-    <guid>b6e2cfa8-bcc4-41c1-9d1f-6242a6c5cb4c</guid>
     <class>
       <name>XWiki.StyleSheetExtension</name>
       <customClass/>
@@ -742,7 +642,7 @@ $.initializeNewEntryBtn();
         <prettyName>Caching policy</prettyName>
         <relationalStorage>0</relationalStorage>
         <separator> </separator>
-        <separators> ,|</separators>
+        <separators>|, </separators>
         <size>1</size>
         <unmodifiable>0</unmodifiable>
         <values>long|short|default|forbid</values>
@@ -758,6 +658,22 @@ $.initializeNewEntryBtn();
         <unmodifiable>0</unmodifiable>
         <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
       </code>
+      <contentType>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>contentType</name>
+        <number>6</number>
+        <prettyName>Content Type</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>CSS|LESS</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </contentType>
       <name>
         <disabled>0</disabled>
         <name>name</name>
@@ -787,13 +703,17 @@ $.initializeNewEntryBtn();
         <prettyName>Use this extension</prettyName>
         <relationalStorage>0</relationalStorage>
         <separator> </separator>
-        <separators> ,|</separators>
+        <separators>|, </separators>
         <size>1</size>
         <unmodifiable>0</unmodifiable>
         <values>currentPage|onDemand|always</values>
         <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
       </use>
     </class>
+    <name>XWiki.SuggestDisplayEditItems</name>
+    <number>0</number>
+    <className>XWiki.StyleSheetExtension</className>
+    <guid>b6e2cfa8-bcc4-41c1-9d1f-6242a6c5cb4c</guid>
     <property>
       <cache>long</cache>
     </property>
@@ -828,4 +748,100 @@ $.initializeNewEntryBtn();
       <use>onDemand</use>
     </property>
   </object>
+  <content>{{velocity}}
+#**
+* Get item className from hibernate query
+*#
+#macro(getItemClassName $className $propertyName)
+   ## TODO: improve this macro
+   #set($itemClassName = "")
+   #set($propertyClass = $xwiki.getDocument($className).getxWikiClass().get($propertyName).getPropertyClass())
+   #set($hibquery = $propertyClass.sql)
+   #set($clsStartIndex = $hibquery.toLowerCase().indexOf('.classname'))
+   ## The query can use ' or " as string delemitor, so we enforce the usage of '.
+   ## I am quite confident that the className does not contain ' or " characters, but if it is the case
+   ## we will have a bug.
+   #set($subQuery = $hibquery.substring($clsStartIndex).replaceAll('"', "'"))
+   #set($results = $subQuery.split("'"))
+   ## We get the second result, the one between the 2 ' characters
+   #set($itemClassName = $results[1])
+#end
+#set($action = $request.action)
+#if("$!action" != "")
+   #if($action == "editItem" &amp;&amp; "$!request.itemDocRef" != "" &amp;&amp; $xwiki.exists("$request.itemDocRef") &amp;&amp; "$!request.className" != "" &amp;&amp; "$!request.propertyName" != "")
+     #set($itemDocRef = $request.itemDocRef)
+     #if($xwiki.hasAccessLevel('edit',$xcontext.user,${itemDocRef}))
+       #set($discard = $context.setDisplayMode("edit"))
+       #set($className = $request.className)
+       #set($propertyName = $request.propertyName)
+       #getItemClassName($className,$propertyName)
+       #set($doc = $xwiki.getDocument($itemDocRef))
+       #set($wikiName = $doc.getDocumentReference().getWikiReference().getName())
+       #if($itemClassName != "" &amp;&amp; $xwiki.exists($itemClassName))
+          #set($itemClassSheet = $itemClassName.substring(0,$itemClassName.indexOf('Class')))
+          #set($itemClassSheet = "${itemClassSheet}Sheet")
+          ## To show the edit attachment button of the attachment selector we need to check 
+          ## if the current user has edit rights on the item document and then set the $hasEdit variable to true 
+          #set($itemEditPerm = $xwiki.hasAccessLevel('edit',$xcontext.user,${itemDocRef}))
+          #if($itemEditPerm &amp;&amp; !$hasEdit)
+             #set($hasEdit = true)
+          #end
+          {{html wiki="true"}}
+          &lt;form action="$xwiki.getURL($itemDocRef,'save')" id="editItemForm"&gt;
+            {{include reference="$itemClassSheet"/}}
+             &lt;input type="hidden" id="wikiName" value="$wikiName"/&gt;
+             &lt;input type="hidden" name="form_token" value="$!{services.csrf.getToken()}" /&gt;
+             &lt;input type="hidden" name="xredirect" value="" /&gt;
+             &lt;input class="btn btn-primary" type="button" name="action_save" title="Alt+Shift+S" value="Save"&gt;
+             &lt;input class="btn btn-default" type="button" name="action_cancel" title="Alt+C" value="Cancel"&gt;
+          &lt;/form&gt;
+          {{/html}}
+       #else
+          ##TODO
+       #end
+     #else
+
+        {{error}}$services.localization.render('error') : $services.localization.render('notallowed'){{/error}}
+
+     #end 
+   #elseif($action == "newItem" &amp;&amp; "$!request.className" != "" &amp;&amp; "$!request.propertyName" != "" &amp;&amp; "$!request.parent" != "" &amp;&amp; "$!request.space" != "")
+       #set($className = $request.className)
+       #set($propertyName = $request.propertyName)
+       #set($parent = $request.parent)
+       #set($space = $request.space)
+       #getItemClassName($className,$propertyName)
+       #if($itemClassName != "" &amp;&amp; $xwiki.exists($itemClassName))
+          #set($itemClassTemplate = $itemClassName.substring(0,$itemClassName.indexOf('Class')))
+          #set($itemClassTemplate = "${itemClassTemplate}Template")
+       #else
+          ##TODO
+       #end
+       {{html}}
+         &lt;form action="" id="newdoc" method="post"&gt;
+            &lt;div&gt;
+              &lt;input type="hidden" name="form_token" value="$!{services.csrf.getToken()}" /&gt;
+              &lt;input type="hidden" name="parent" value="${parent}"/&gt;
+              &lt;input type="hidden" name="template" value="${itemClassTemplate}"/&gt;
+              &lt;input type="hidden" name="sheet" value="1"/&gt;
+              &lt;label for="spaceName"&gt;Space: &lt;/label&gt;&lt;input type="text" id="spaceName" name="spaceName" value="${space}" size="8"/&gt;
+              &lt;label for="docName"&gt;Document: &lt;/label&gt;&lt;input type="text" id="docName" name="docName" value="" class="withTip"'/&gt;         
+              &lt;span class="buttonwrapper"&gt;&lt;input type="button" value="Create this document" class="button checkItemExists"/&gt;&lt;/span&gt;
+            &lt;/div&gt;
+          &lt;/form&gt;
+        {{/html}}
+   #elseif($action == "checkItemExists" &amp;&amp; "$!request.spaceName" != "" &amp;&amp; "$!request.docName" != "")
+      #set($itemRef = "${request.spaceName}.${request.docName}")
+      #if($xwiki.exists($itemRef))
+           {"results":false}
+      #else
+         #set($documentReference = $services.model.createDocumentReference(null, $request.spaceName, $request.docName))
+         #set($title = $escapetool.url($request.docName))
+         #set($parent = $escapetool.url($request.parent))
+         #set($template = $escapetool.url($request.template))
+         #set($redirectURL = $xwiki.getURL($documentReference,'edit',"template=${template}&amp;parent=${parent}&amp;title=${title}"))
+           {"results":"$redirectURL"}
+        #end
+   #end
+#end
+{{/velocity}}</content>
 </xwikidoc>
