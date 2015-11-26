@@ -442,6 +442,9 @@ initializeItemEditForm : function(itemEditURL,XWModalContent,isNewItem) {
    }
    // Initialize attachment-picker fields
    $(".suggestDisplayEditItemModal .attachment-picker-start").click(function(event) {
+      // Add the form fields value to the "itemEditURL", for saving these values and
+      // re fill the edit form with those values if we go into another popup like the attachments selector
+      itemEditURL += "&amp;" + $("#editItemForm").serialize();
       var attPickerURL = $(this).attr("href") + "&amp;xpage=plain";
       var wikiName = xm ? xm.wiki : $('meta[name="wiki"]').attr('content');
       attPickerURL = attPickerURL + "&amp;wikiName=" + wikiName;
