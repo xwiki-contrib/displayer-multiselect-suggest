@@ -31,7 +31,7 @@
  </parent>
  <groupId>org.xwiki.contrib</groupId>
  <artifactId>displayer-multiselect-suggest</artifactId>
- <version>1.5-SNAPSHOT</version>
+ <version>1.5</version>
  <name>Multiselect custom display</name>
  <packaging>xar</packaging>
  <description>This is a custom suggest displayer for DBList object properties which adapts the suggest feature to multiple selection.</description>
@@ -39,7 +39,7 @@
    <connection>scm:git:git://github.com/xwiki-contrib/displayer-multiselect-suggest.git</connection>
    <developerConnection>scm:git:git@github.com:xwiki-contrib/displayer-multiselect-suggest.git</developerConnection>
    <url>https://github.com/xwiki-contrib/displayer-multiselect-suggest</url>
-   <tag>displayer-multiselect-suggest-1.1</tag>
+   <tag>displayer-multiselect-suggest-1.5</tag>
   </scm>
  <developers>
    <developer>
