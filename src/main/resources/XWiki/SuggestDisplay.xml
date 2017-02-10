@@ -133,7 +133,11 @@
   initialize: function(element) {
     this.input = element;
     // get the referer input to pass it to the suggest script
-    var suggestRefererInput = this.input.previous("input[name=" + this.input.readAttribute('name') + "Referer]");
+    var suggestRefererInputName = this.input.readAttribute('name') + 'Referer';
+    var suggestRefererInput = this.input.previous('input');
+    while(suggestRefererInput &amp;&amp; suggestRefererInput.name != suggestRefererInputName) {
+      suggestRefererInput = suggestRefererInput.previous('input');
+    }
     this.input.writeAttribute('onfocus', this.input.readAttribute('onfocus').replace(/^/, 'return this._x_suggest = '));
     var original_onfocus = this.input.onfocus;
     this.input.onfocus = function() {
@@ -141,7 +145,7 @@
       this.suggest.options.timeout = 5000;
       this.suggest.options.callback = this.addItem.bind(this);
       /* add the requester here, to get the suggests in context */
-      if (suggestRefererInput) {
+      if (suggestRefererInput &amp;&amp; suggestRefererInput.name == suggestRefererInputName) {
         this.suggest.options.script = this.suggest.options.script + "&amp;refererdoc=" + encodeURIComponent(suggestRefererInput.getValue()) + "&amp;";
       }
     }.bind(this);
